@@ -10,6 +10,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BirdsOfAFeatherTeam14">
         <activity
+            android:name=".ViewUserActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileCoursesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfilePictureActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileNameActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
