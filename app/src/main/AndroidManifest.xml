@@ -13,13 +13,13 @@
             android:name=".ViewUserActivity"
             android:exported="false" />
         <activity
-            android:name=".ProfileCoursesActivity"
-            android:exported="false" />
-        <activity
             android:name=".ProfilePictureActivity"
             android:exported="false" />
         <activity
             android:name=".ProfileNameActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileCoursesActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
