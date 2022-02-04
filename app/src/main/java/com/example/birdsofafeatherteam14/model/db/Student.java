@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "persons")
+@Entity(tableName = "students")
 public class Student {
 
     @PrimaryKey
