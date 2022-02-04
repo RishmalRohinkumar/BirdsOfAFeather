@@ -14,6 +14,6 @@ public class Student {
     @ColumnInfo(name = "name")
     public String name;
 
-    @ColumnInfo(name = "imgPath")
-    public String imgPath;
+    @ColumnInfo(name = "photo")
+    public String photo;
 }

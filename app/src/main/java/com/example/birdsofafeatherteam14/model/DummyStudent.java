@@ -1,5 +1,7 @@
 package com.example.birdsofafeatherteam14.model;
 
+import com.example.birdsofafeatherteam14.model.db.Course;
+
 import java.util.List;
 
 public class DummyStudent implements IStudent{
