@@ -8,11 +8,14 @@ public class DummyStudent implements IStudent{
     private String name;
     private String photo;
     private List<Course> courses;
+    private int id;
 
-    DummyStudent(String name, String photo, List<Course> courses) {
+    DummyStudent(int id, String name, String photo, List<Course> courses) {
         this.name = name;
         this.photo = photo;
         this.courses = courses;
+        this.id = id;
+
     }
 
     @Override
@@ -24,6 +27,9 @@ public class DummyStudent implements IStudent{
     public String getPhoto() {
         return photo;
     }
+
+    @Override
+    public int getId() { return id; }
 
     @Override
     public List<Course> getCourses() {
