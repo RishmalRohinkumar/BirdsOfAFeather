@@ -1,4 +1,4 @@
-package com.example.birdsofafeatherteam14;
+package com.example.birdsofafeatherteam14.model;
 
 import java.util.List;
 
