@@ -2,6 +2,7 @@ package com.example.birdsofafeatherteam14.model;
 
 import com.example.birdsofafeatherteam14.model.db.Course;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class DummyStudent implements IStudent{
@@ -10,10 +11,10 @@ public class DummyStudent implements IStudent{
     private List<Course> courses;
     private int id;
 
-    DummyStudent(int id, String name, String photo, List<Course> courses) {
+    public DummyStudent(int id, String name, String photo, Course[] courses) {
         this.name = name;
         this.photo = photo;
-        this.courses = courses;
+        this.courses = Arrays.asList(courses);
         this.id = id;
 
     }
