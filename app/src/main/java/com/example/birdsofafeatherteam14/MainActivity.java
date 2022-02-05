@@ -8,7 +8,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.birdsofafeatherteam14.model.DummyStudent;
 import com.example.birdsofafeatherteam14.model.IStudent;
+import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     protected RecyclerView studentRecyclerView;
@@ -33,12 +38,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setTitle("Birds of a Feather");
 
+        AppDatabase db = AppDatabase.singleton(getApplicationContext());
+        List<? extends IStudent> students = db.studentWithCoursesDAO().getAll();
+
         studentRecyclerView = findViewById(R.id.students_view);
 
         studentLayoutManager = new LinearLayoutManager(this);
         studentRecyclerView.setLayoutManager(studentLayoutManager);
 
-        studentViewAdapter = new StudentViewAdapter(data);
+        studentViewAdapter = new StudentViewAdapter(students);
         studentRecyclerView.setAdapter(studentViewAdapter);
     }
 }
