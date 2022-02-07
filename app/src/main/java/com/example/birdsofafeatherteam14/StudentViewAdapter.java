@@ -12,10 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.birdsofafeatherteam14.model.IStudent;
 
-public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.ViewHolder> {
-    private final IStudent[] students;
+import java.util.List;
 
-    public StudentViewAdapter(IStudent[] students) {
+public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.ViewHolder> {
+    private final List<? extends IStudent> students;
+
+    public StudentViewAdapter(List<? extends IStudent> students) {
         super();
         this.students = students;
     }
@@ -32,12 +34,12 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull StudentViewAdapter.ViewHolder holder, int position) {
-        holder.setStudent(students[position]);
+        holder.setStudent(students.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return this.students.length;
+        return this.students.size();
     }
 
     public static class ViewHolder
@@ -64,6 +66,7 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
             intent.putExtra("student_id", this.student.getId());
             intent.putExtra("student_name", this.student.getName());
             intent.putExtra("student_picture", this.student.getPhoto());
+            intent.putExtra("student_courses", this.student.getCourses().toArray());
             context.startActivity(intent);
         }
     }
