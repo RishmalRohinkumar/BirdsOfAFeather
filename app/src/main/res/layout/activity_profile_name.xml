@@ -7,10 +7,43 @@
     tools:context=".ProfileNameActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/profile_name_title_textView"
+        android:layout_width="346dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="27dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="38dp"
+        android:text="@string/enter_first_name"
+        android:textSize="32sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextTextPersonName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Temp text"
-        tools:layout_editor_absoluteX="76dp"
-        tools:layout_editor_absoluteY="162dp" />
+        android:layout_marginStart="98dp"
+        android:layout_marginEnd="103dp"
+        android:layout_marginBottom="279dp"
+        android:ems="10"
+        android:hint="@string/name_hint"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/enter_name_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="148dp"
+        android:layout_marginTop="65dp"
+        android:layout_marginEnd="175dp"
+        android:text="Enter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
 </androidx.constraintlayout.widget.ConstraintLayout>
