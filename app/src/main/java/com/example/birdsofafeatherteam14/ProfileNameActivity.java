@@ -1,5 +1,7 @@
 package com.example.birdsofafeatherteam14;
 
+import static com.example.birdsofafeatherteam14.Utilities.showAlert;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -75,8 +77,9 @@ public class ProfileNameActivity extends AppCompatActivity {
         String name = enterNameEditText.getText().toString();
         if (name.equals("")) {
             // Name is invalid, mark appropriately on the UI
-            TextView errorTextView = findViewById(R.id.invalid_name_textview);
-            errorTextView.setText("You must enter a name");
+            //TextView errorTextView = findViewById(R.id.invalid_name_textview);
+            //errorTextView.setText("You must enter a name");
+            showAlert(this, "You must enter a name!");
         } else {
             // Go to the next activity, passing through the name as an extra
             Intent intent = new Intent(this, ProfilePictureActivity.class);
