@@ -42,9 +42,9 @@ public class ProfileCoursesTests {
             EditText year_text = activity.findViewById(R.id.enter_year);
 
             assertEquals("", subject_text.getText().toString());
-            assertEquals("", Integer.parseInt(course_number_text.getText().toString()));
+            assertEquals("", course_number_text.getText().toString());
             assertEquals("", quarter_text.getText().toString());
-            assertEquals("", Integer.parseInt(year_text.getText().toString()));
+            assertEquals("", year_text.getText().toString());
         });
     }
 
