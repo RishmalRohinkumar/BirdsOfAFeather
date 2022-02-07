@@ -42,6 +42,12 @@ public class ProfileCoursesActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        db.close();
+    }
+
     public void onEnterButtonClicked(View view) {
         EditText subject_text = findViewById(R.id.enter_subject);
         EditText course_number_text = findViewById(R.id.enter_course_number);
