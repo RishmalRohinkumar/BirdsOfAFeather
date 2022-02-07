@@ -50,6 +50,10 @@ public class MainActivity extends AppCompatActivity {
         
         setTitle("Birds of a Feather");
 
+        Intent intent = new Intent(this, ProfileCoursesActivity.class);
+        intent.putExtra("student_id", 0);
+        startActivity(intent);
+
         AppDatabase db = AppDatabase.singleton(getApplicationContext());
         List<? extends IStudent> students = db.studentWithCoursesDAO().getAll();
 

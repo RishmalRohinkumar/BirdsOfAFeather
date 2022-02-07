@@ -13,16 +13,21 @@ import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Student;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileCoursesActivity extends AppCompatActivity {
     private AppDatabase db;
     private IStudent student;
 
+    private List<Course> coursesToAdd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_courses);
+
+        coursesToAdd = new ArrayList<Course>();
 
         Intent intent = getIntent();
         int studentId = intent.getIntExtra("student_id", 0);
@@ -54,19 +59,19 @@ public class ProfileCoursesActivity extends AppCompatActivity {
             error_text.setText("That is an invalid Course Number.");
         }
 
-        if (quarter != "Fall" || quarter != "Winter" || quarter != "Spring" ||
-            quarter != "Summer Session I" || quarter != "Summer Session II" ||
-            quarter != "Special Summer Session") {
+        if (quarter.equals("Fall") || quarter.equals("Winter") || quarter.equals("Spring")||
+            quarter.equals("Summer Session I") || quarter.equals("Summer Session II") ||
+            quarter.equals("Special Summer Session")) {
+
+            Course new_course = new Course(0, 0, year, course_number, subject, quarter);
+            this.coursesToAdd.add(new_course);
+            error_text.setText("Added quarter");
+
+            TextView stored_courses = findViewById(R.id.stored_courses_display);
+            stored_courses.setText(stored_courses.getText().toString() + new_course.getCourse() + "\n");
+        } else {
             error_text.setText("That is an invalid Quarter.");
         }
-
-        int newCourseId = db.coursesDAO().count() + 1;
-        int studentId = student.getId();
-        Course new_course = new Course(newCourseId, studentId, year, course_number, subject, quarter);
-        db.coursesDAO().insert(new_course);
-
-        TextView stored_courses = findViewById(R.id.stored_courses_display);
-        stored_courses.setText(stored_courses.getText() + new_course.getCourse() + "\n");
     }
 
     public void onBackButtonClicked(View view) {
@@ -74,6 +79,12 @@ public class ProfileCoursesActivity extends AppCompatActivity {
     }
 
     public void onSubmitButtonClicked(View view) {
+        // NEED TO GO THROUGH coursesToAdd AND SET THE IDS APPROPRIATELY BEFORE ADDING TO DATABASE
+        // THIS FUNCTION DOESN'T REALLY DO ANYTHING YET
+        int newCourseId = db.coursesDAO().count() + 1;
+        int studentId = student.getId();
+        //db.coursesDAO().insert(new_course);
 
+        // AT END, go to next activity after adding to database
     }
 }
