@@ -35,5 +35,9 @@ public class Course {
         this.courseQuarter = courseQuarter;
     }
 
-
+    public String getCourse() {
+        String num = String.valueOf(courseNumber);
+        String year = String.valueOf(courseYear);
+        return courseName + " " + num + " " + courseQuarter + " " + year;
+    }
 }
