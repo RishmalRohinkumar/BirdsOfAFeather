@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
             new DummyStudent(1, "John Doe", "photo1", courses1)
     };
 
+    private static final int NO_ID_SET = -999999;
+
 
     String profile_pic_url;
 
@@ -52,20 +54,29 @@ public class MainActivity extends AppCompatActivity {
         
         setTitle("Birds of a Feather");
 
-        Intent intent = new Intent(this, ProfileCoursesActivity.class);
-        intent.putExtra("student_id", 0);
-        startActivity(intent);
+        int studentId = getIntent().getIntExtra("student_id", NO_ID_SET);
+        // In the future, maybe store the ID of the current user somewhere else in the database
+        // we can store which is the user student between instances of the app
+        if (studentId == NO_ID_SET) {
+            // The current student hasn't been created, so we should go through the profile
+            // creation process. Once we've looped back around to the main activity, then
+            // an extra with the id of this student will be passed through, which we can use
+            // in the else clause
+            Intent intent = new Intent(this, ProfileNameActivity.class);
+            startActivity(intent);
+        } else {
+            // We have a student Id, so we should set up the database
+            db = AppDatabase.singleton(getApplicationContext());
+            List<? extends IStudent> students = db.studentWithCoursesDAO().getAll();
 
-        db = AppDatabase.singleton(getApplicationContext());
-        List<? extends IStudent> students = db.studentWithCoursesDAO().getAll();
+            studentRecyclerView = findViewById(R.id.students_view);
 
-        studentRecyclerView = findViewById(R.id.students_view);
+            studentLayoutManager = new LinearLayoutManager(this);
+            studentRecyclerView.setLayoutManager(studentLayoutManager);
 
-        studentLayoutManager = new LinearLayoutManager(this);
-        studentRecyclerView.setLayoutManager(studentLayoutManager);
-
-        studentViewAdapter = new StudentViewAdapter(students);
-        studentRecyclerView.setAdapter(studentViewAdapter);
+            studentViewAdapter = new StudentViewAdapter(students);
+            studentRecyclerView.setAdapter(studentViewAdapter);
+        }
     }
 
     @Override

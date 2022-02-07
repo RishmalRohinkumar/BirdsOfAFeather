@@ -31,6 +31,10 @@ public class ProfilePictureActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_picture);
 
+        Intent intent = getIntent();
+        String name = intent.getStringExtra("student_name");
+        setTitle(name);
+
         //Default Picture
         String url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPGyOeoFf4IcQNhHFWSkaYWgwDUSdpMCw-3A&usqp=CAU";
         if(URLUtil.isValidUrl(url)){
