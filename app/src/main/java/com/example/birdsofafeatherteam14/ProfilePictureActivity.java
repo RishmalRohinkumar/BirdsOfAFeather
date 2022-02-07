@@ -33,7 +33,6 @@ public class ProfilePictureActivity extends AppCompatActivity {
         String default_url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPGyOeoFf4IcQNhHFWSkaYWgwDUSdpMCw-3A&usqp=CAU";
         setImage(default_url);
     }
-//https://ae01.alicdn.com/kf/He56b2502d0d544398659135bc7eed7474/Demon-Slayer-Kimetsu-no-Yaiba-Tanjiro-Kamado-Short-Chestnut-Brown-Heat-Resistant-Hair-Cosplay-Costume-Wig.jpg_Q90.jpg_.webp
     // Helper Method to encapsulate setting the ImageView to the URL specified in the parameter
     private void setImage(String url) {
         if(checkURLValidity(url)){
