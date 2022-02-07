@@ -48,9 +48,7 @@ public class ProfilePictureActivity extends AppCompatActivity {
     // Unsure about this v
     // https://stackoverflow.com/questions/47587755/how-to-check-if-the-url-is-valid-in-android/47588559
     private boolean checkURLValidity(String url) {
-        //return URLUtil.isValidUrl(url);
-        //return Patterns.WEB_URL.matcher(url).matches();
-        return true;
+        return Patterns.WEB_URL.matcher(url).matches();
     }
 
     public void onSaveClicked(View view) {
