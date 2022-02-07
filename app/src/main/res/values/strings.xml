@@ -1,3 +1,5 @@
 <resources>
+    <string name="enter_first_name">Enter Your First Name</string>
+    <string name="name_hint">Name</string>
     <string name="app_name">Birds of a Feather</string>
 </resources>

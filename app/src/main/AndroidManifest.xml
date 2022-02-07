@@ -9,6 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BirdsOfAFeatherTeam14">
+        <meta-data
+            android:name="com.google.android.auth.API_KEY"
+            android:value="AIzaSyCyWUWeQ_fW-xzslRS3nmPZWN_nRgHFzSc"/>
         <activity
             android:name=".ViewUserActivity"
             android:exported="false" />
