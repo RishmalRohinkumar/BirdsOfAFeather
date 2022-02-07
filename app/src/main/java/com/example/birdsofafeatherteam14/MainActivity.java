@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     protected Course course1 = new Course(1, 0, 2022, 105, "CSE", "Winter");
     protected Course course2 = new Course(0, 1, 2022, 110, "CSE", "Winter");
 
+    protected AppDatabase db;
+
     public Course[] courses0 = new Course[]{course0, course1};
     public Course[] courses1 = new Course[]{course2};
 
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("student_id", 0);
         startActivity(intent);
 
-        AppDatabase db = AppDatabase.singleton(getApplicationContext());
+        db = AppDatabase.singleton(getApplicationContext());
         List<? extends IStudent> students = db.studentWithCoursesDAO().getAll();
 
         studentRecyclerView = findViewById(R.id.students_view);
@@ -64,6 +66,15 @@ public class MainActivity extends AppCompatActivity {
 
         studentViewAdapter = new StudentViewAdapter(students);
         studentRecyclerView.setAdapter(studentViewAdapter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // This is important for any test cases involving the main activity.
+        // Need to close the database so all of the tests running one after each other
+        // don't fuck up the database
+        db.close();
     }
 
     @Override
