@@ -17,9 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileCoursesActivity extends AppCompatActivity {
-    private AppDatabase db;
-    private Student student;
-
     private List<Course> coursesToAdd;
     // track the id of the courses since we aren't adding them to the database as they are entered,
     // only once the submit button is pressed
@@ -32,17 +29,6 @@ public class ProfileCoursesActivity extends AppCompatActivity {
 
         coursesToAdd = new ArrayList<Course>();
 
-        // Get the name and image url that were passed into this activity
-        Intent intent = getIntent();
-        String name = intent.getStringExtra("student_name");
-        String imageUrl = intent.getStringExtra("student_url");
-
-        // Set up Database and add the student to it
-        db = AppDatabase.singleton(this);
-        student = new Student(db.studentWithCoursesDAO().count()+1, name, imageUrl);
-        db.studentWithCoursesDAO().insert(student);
-
-        currentCourseId = db.coursesDAO().count() + 1;
         /*
         Old code where we were already populating the current courses for a student that might already
         be in the database. However, I think we're only supposed to create a new profile on first time
@@ -57,12 +43,6 @@ public class ProfileCoursesActivity extends AppCompatActivity {
             stored_courses.setText(stored_courses.getText() + courses.get(i).getCourse() + "\n");
         }
         */
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        db.close();
     }
 
     public void onEnterButtonClicked(View view) {
@@ -86,8 +66,8 @@ public class ProfileCoursesActivity extends AppCompatActivity {
             quarter.equals("Summer Session I") || quarter.equals("Summer Session II") ||
             quarter.equals("Special Summer Session")) {
 
-            // Student Id, always the same, take the current Course Id and then iterate it for the next course to be added
-            Course new_course = new Course(currentCourseId++, student.studentId, year, course_number, subject, quarter);
+            // set course/student id later once we are adding to the database
+            Course new_course = new Course(0, 0, year, course_number, subject, quarter);
             this.coursesToAdd.add(new_course);
             error_text.setText("Added quarter");
 
@@ -103,8 +83,23 @@ public class ProfileCoursesActivity extends AppCompatActivity {
     }
 
     public void onSubmitButtonClicked(View view) {
+        // Get the name and image url that were passed into this activity
+        Intent extraIntent = getIntent();
+        String name = extraIntent.getStringExtra("student_name");
+        String imageUrl = extraIntent.getStringExtra("student_url");
+
+
+        // Set up Database and add the student to it
+        AppDatabase db = AppDatabase.singleton(this);
+        Student student = new Student(db.studentWithCoursesDAO().count()+1, name, imageUrl);
+        db.studentWithCoursesDAO().insert(student);
+
+        currentCourseId = db.coursesDAO().count() + 1;
+
         // Go through courses we want to add and add them to the database
         for (Course course : coursesToAdd) {
+            course.courseId = currentCourseId++;
+            course.studentId = student.studentId;
             db.coursesDAO().insert(course);
         }
         // Return back to the main activity, with an intent for the id of the student running the
@@ -116,7 +111,7 @@ public class ProfileCoursesActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         // Tell the Main Activity we already initialized a student, and give it the ID so it can find
         // the student in the database
-        intent.putExtra("student_id", this.student.studentId);
+        intent.putExtra("student_id", student.studentId);
         startActivity(intent);
     }
 }
