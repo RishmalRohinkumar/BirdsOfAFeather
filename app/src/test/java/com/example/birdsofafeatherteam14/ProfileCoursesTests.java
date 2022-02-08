@@ -27,9 +27,6 @@ public class ProfileCoursesTests {
     @Rule
     public ActivityScenarioRule<ProfileCoursesActivity> scenarioRule = new ActivityScenarioRule<ProfileCoursesActivity>(ProfileCoursesActivity.class);
 
-    private AppDatabase db;
-    private IStudent student;
-
     @Test
     public void testInitialDisplay() {
         ActivityScenario<ProfileCoursesActivity> scenario = scenarioRule.getScenario();

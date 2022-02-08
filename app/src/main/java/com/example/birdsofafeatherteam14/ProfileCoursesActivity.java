@@ -65,11 +65,11 @@ public class ProfileCoursesActivity extends AppCompatActivity {
             error_text.setText("That is an invalid Course Number.");
         }
 
-        if (quarter.equals("Fall") || quarter.equals("Winter") || quarter.equals("Spring")||
-            quarter.equals("Summer Session I") || quarter.equals("Summer Session II") ||
-            quarter.equals("Special Summer Session")) {
-
-            Course new_course = new Course(0, 0, year, course_number, subject, quarter);
+        if (quarter.equals("Fall") || quarter.equals("Winter") || quarter.equals("Spring") ||
+                quarter.equals("Summer Session I") || quarter.equals("Summer Session II") ||
+                quarter.equals("Special Summer Session")) {
+            int newCourseId = db.coursesDAO().count() + 1;
+            Course new_course = new Course(newCourseId, 0, year, course_number, subject, quarter);
             this.coursesToAdd.add(new_course);
             error_text.setText("Added quarter");
 
