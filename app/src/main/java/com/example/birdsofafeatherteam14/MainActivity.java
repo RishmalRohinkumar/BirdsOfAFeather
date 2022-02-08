@@ -85,7 +85,9 @@ public class MainActivity extends AppCompatActivity {
         // This is important for any test cases involving the main activity.
         // Need to close the database so all of the tests running one after each other
         // don't fuck up the database
-        db.close();
+        if (db != null) {
+            db.close();
+        }
     }
 
     @Override

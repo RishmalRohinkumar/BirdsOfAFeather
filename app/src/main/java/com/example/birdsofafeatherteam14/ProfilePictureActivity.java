@@ -19,6 +19,7 @@ public class ProfilePictureActivity extends AppCompatActivity {
 
     public static final int PICTURE_ACTIVITY_CODE = 0;
     String current_url = "";
+    String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +27,7 @@ public class ProfilePictureActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile_picture);
 
         Intent intent = getIntent();
-        String name = intent.getStringExtra("student_name");
-        setTitle(name);
+        this.name = intent.getStringExtra("student_name");
 
         //Default Picture
         String default_url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPGyOeoFf4IcQNhHFWSkaYWgwDUSdpMCw-3A&usqp=CAU";
@@ -59,10 +59,10 @@ public class ProfilePictureActivity extends AppCompatActivity {
 
 
     public void onGoBackClicked(View view){
-
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("url",current_url);
-        setResult(Activity.RESULT_OK, returnIntent);
-        finish();
+        // Continue onto the course selection activity passing along the name and url to it
+        Intent intent = new Intent(this, ProfileCoursesActivity.class);
+        intent.putExtra("student_name", this.name);
+        intent.putExtra("student_url", this.current_url);
+        startActivity(intent);
     }
 }

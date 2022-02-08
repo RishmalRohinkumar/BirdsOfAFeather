@@ -45,12 +45,14 @@ public class ProfileNameActivity extends AppCompatActivity {
     private void setTextToFirstName(GoogleSignInAccount account) {
         TextView textView = (TextView) findViewById(R.id.editTextTextPersonName);
         String fullName = account.getDisplayName();
-        String[] splitName = fullName.split(" ");
-        String firstName = "";
-        if (splitName.length >= 1) {
-            firstName = splitName[0];
+        if (fullName != null) {
+            String[] splitName = fullName.split(" ");
+            String firstName = "";
+            if (splitName.length >= 1) {
+                firstName = splitName[0];
+            }
+            textView.setText(firstName);
         }
-        textView.setText(firstName);
     }
 
     @Override
