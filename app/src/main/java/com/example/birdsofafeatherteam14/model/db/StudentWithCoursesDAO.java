@@ -20,6 +20,10 @@ public interface StudentWithCoursesDAO {
     @Query("SELECT COUNT(*) from students")
     int count();
 
+    // jank stuff idk why its supposed to be a Student not a StudentWithCourse
+    // but it should work like this
+    @Insert
+    void insert(Student student);
 //    @Insert
 //    void insert(StudentWithCoursesDAO studentWithCoursesDAO);
 }

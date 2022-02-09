@@ -7,6 +7,12 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "students")
 public class Student {
 
+    public Student(int studentId, String name, String photo) {
+        this.studentId = studentId;
+        this.name = name;
+        this.photo = photo;
+    }
+
     @PrimaryKey
     @ColumnInfo(name = "id")
     public int studentId;
