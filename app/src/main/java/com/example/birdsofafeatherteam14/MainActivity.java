@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     protected Course course1 = new Course(1, 0, 2022, 105, "CSE", "Winter");
     protected Course course2 = new Course(0, 1, 2022, 110, "CSE", "Winter");
 
+    protected AppDatabase db;
+
     public Course[] courses0 = new Course[]{course0, course1};
     public Course[] courses1 = new Course[]{course2};
 
@@ -39,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
             new DummyStudent(0, "Jane Doe", "photo0", courses0),
             new DummyStudent(1, "John Doe", "photo1", courses1)
     };
+
+    private static final int NO_ID_SET = -999999;
 
 
     String profile_pic_url;
@@ -50,20 +54,40 @@ public class MainActivity extends AppCompatActivity {
         
         setTitle("Birds of a Feather");
 
-        Intent intent = new Intent(this, ProfileCoursesActivity.class);
-        intent.putExtra("student_id", 0);
-        startActivity(intent);
+        int studentId = getIntent().getIntExtra("student_id", NO_ID_SET);
+        // In the future, maybe store the ID of the current user somewhere else in the database
+        // we can store which is the user student between instances of the app
+        if (studentId == NO_ID_SET) {
+            // The current student hasn't been created, so we should go through the profile
+            // creation process. Once we've looped back around to the main activity, then
+            // an extra with the id of this student will be passed through, which we can use
+            // in the else clause
+            Intent intent = new Intent(this, ProfileNameActivity.class);
+            startActivity(intent);
+        } else {
+            // We have a student Id, so we should set up the database
+            db = AppDatabase.singleton(getApplicationContext());
+            List<? extends IStudent> students = db.studentWithCoursesDAO().getAll();
 
-        AppDatabase db = AppDatabase.singleton(getApplicationContext());
-        List<? extends IStudent> students = db.studentWithCoursesDAO().getAll();
+            studentRecyclerView = findViewById(R.id.students_view);
 
-        studentRecyclerView = findViewById(R.id.students_view);
+            studentLayoutManager = new LinearLayoutManager(this);
+            studentRecyclerView.setLayoutManager(studentLayoutManager);
 
-        studentLayoutManager = new LinearLayoutManager(this);
-        studentRecyclerView.setLayoutManager(studentLayoutManager);
+            studentViewAdapter = new StudentViewAdapter(students);
+            studentRecyclerView.setAdapter(studentViewAdapter);
+        }
+    }
 
-        studentViewAdapter = new StudentViewAdapter(students);
-        studentRecyclerView.setAdapter(studentViewAdapter);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // This is important for any test cases involving the main activity.
+        // Need to close the database so all of the tests running one after each other
+        // don't fuck up the database
+        if (db != null) {
+            db.close();
+        }
     }
 
     @Override
