@@ -158,7 +158,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
         } catch (IndexOutOfBoundsException | NumberFormatException e) {
-            showAlert(this, "Error in CSV formatting. Please make sure there is only one newline between each row. If you can't get it to work, then please ask Tyler.");
+            showAlert(this,
+                    "Error in CSV formatting. Please make sure there is only one newline between each row. If you can't get it to work, then please ask Tyler.");
         }
 
     }
