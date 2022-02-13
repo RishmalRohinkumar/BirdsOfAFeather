@@ -3,6 +3,7 @@ package com.example.birdsofafeatherteam14;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,12 +19,18 @@ import com.example.birdsofafeatherteam14.model.DummyStudent;
 import com.example.birdsofafeatherteam14.model.IStudent;
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
+import com.google.android.gms.nearby.messages.Message;
+import com.google.android.gms.nearby.messages.MessageListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    // Stuff for bluetooth
+    private MessageListener messageListener;
+    private static final String TAG = "BOAF-14";
+
     protected RecyclerView studentRecyclerView;
     protected RecyclerView.LayoutManager studentLayoutManager;
     protected StudentViewAdapter studentViewAdapter;
@@ -54,7 +61,25 @@ public class MainActivity extends AppCompatActivity {
         
         setTitle("Birds of a Feather");
 
+        // Set up bluetooth
+        MessageListener realListener = new MessageListener() {
+            @Override
+            public void onFound(@NonNull Message message) {
+                // Put stuff in the database
+                if (db != null) {
+                    String student_data = new String(message.getContent());
+                    // call helper method to add student to database
+                }
+            }
+
+            @Override
+            public void onLost(@NonNull Message message) {
+                // Does nothing atm
+            }
+        };
+
         int studentId = getIntent().getIntExtra("student_id", NO_ID_SET);
+        List<String> mockStudents = getIntent().getStringArrayListExtra("mock_students");
         // In the future, maybe store the ID of the current user somewhere else in the database
         // we can store which is the user student between instances of the app
         if (studentId == NO_ID_SET) {
@@ -64,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
             // in the else clause
             Intent intent = new Intent(this, ProfileNameActivity.class);
             startActivity(intent);
+        } else if (!mockStudents.isEmpty()) {
+            // We have mock students we want to add.
+            this.messageListener = new MockMessageListenerClass(realListener, mockStudents);
         } else {
             // We have a student Id, so we should set up the database
             db = AppDatabase.singleton(getApplicationContext());
