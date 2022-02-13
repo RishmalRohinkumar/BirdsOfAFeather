@@ -5,6 +5,10 @@ import static com.example.birdsofafeatherteam14.Utilities.showAlert;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,6 +18,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 
@@ -32,8 +37,10 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     // Stuff for bluetooth
     private MessageListener messageListener;
+    private MessageListener realListener;
     private static final String TAG = "BOAF-14";
 
+    public static final int START_MOCK_BLUETOOTH = 99;
 
     protected RecyclerView studentRecyclerView;
     protected RecyclerView.LayoutManager studentLayoutManager;
@@ -55,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             new DummyStudent(1, "John Doe", "photo1", courses1)
     };
 
-    private static final int NO_ID_SET = -999999;
+    public static final int NO_ID_SET = -999999;
 
 
     String profile_pic_url;
@@ -68,13 +75,14 @@ public class MainActivity extends AppCompatActivity {
         setTitle("Birds of a Feather");
 
         // Set up bluetooth
-        MessageListener realListener = new MessageListener() {
+        this.realListener = new MessageListener() {
             @Override
             public void onFound(@NonNull Message message) {
                 // Put stuff in the database
                 if (db != null) {
                     String student_data = new String(message.getContent());
                     addStudentCSVStringToDb(student_data);
+                    updateStudentViews();
                 }
             }
 
@@ -85,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
         };
 
         this.studentId = getIntent().getIntExtra("student_id", NO_ID_SET);
-        List<String> mockStudents = getIntent().getStringArrayListExtra("mock_students");
         // In the future, maybe store the ID of the current user somewhere else in the database
         // we can store which is the user student between instances of the app
         if (studentId == NO_ID_SET) {
@@ -98,6 +105,13 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // We have a student Id, so we should set up the database
             db = AppDatabase.singleton(getApplicationContext());
+            updateStudentViews();
+        }
+    }
+
+
+    private void updateStudentViews() {
+        if (db != null) {
             List<? extends IStudent> students = db.studentWithCoursesDAO().getAll();
 
             studentRecyclerView = findViewById(R.id.students_view);
@@ -107,11 +121,6 @@ public class MainActivity extends AppCompatActivity {
 
             studentViewAdapter = new StudentViewAdapter(students);
             studentRecyclerView.setAdapter(studentViewAdapter);
-
-            if (!mockStudents.isEmpty()) {
-                // we have mock students we want to add
-                this.messageListener = new MockMessageListenerClass(realListener, mockStudents);
-            }
         }
     }
 
@@ -126,16 +135,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Dont think this is doing anything any more probably safe to remove
+    // receive information from the bluetooth activity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 1) {
+        if (requestCode == START_MOCK_BLUETOOTH) {
             if(resultCode == Activity.RESULT_OK){
-                this.profile_pic_url = data.getStringExtra("url");
+                List<String> mockStudents = data.getStringArrayListExtra("messages");
+                if (mockStudents != null && !mockStudents.isEmpty()) {
+                    setUpMockBluetooth(mockStudents);
+                }
             }
-
         }
     }
 
@@ -163,5 +174,14 @@ public class MainActivity extends AppCompatActivity {
             showAlert(this, "Error in CSV formatting: " + e.toString());
         }
 
+    }
+
+    public void goToMockBluetoothActivity(View view) {
+        Intent intent = new Intent(this, MockBluetoothActivity.class);
+        startActivityForResult(intent, START_MOCK_BLUETOOTH);
+    }
+
+    public void setUpMockBluetooth(List<String> mockStudents) {
+        this.messageListener = new MockMessageListenerClass(this.realListener, mockStudents);
     }
 }
