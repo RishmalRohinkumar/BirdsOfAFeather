@@ -64,9 +64,9 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
             Context context = view.getContext();
             Intent intent = new Intent(context, ViewUserActivity.class);
             intent.putExtra("student_id", this.student.getId());
-            intent.putExtra("student_name", this.student.getName());
-            intent.putExtra("student_picture", this.student.getPhoto());
-            intent.putExtra("student_courses", this.student.getCourses().toArray());
+//            intent.putExtra("student_name", this.student.getName());
+//            intent.putExtra("student_picture", this.student.getPhoto());
+//            intent.putExtra("student_courses", this.student.getCourses().toArray());
             context.startActivity(intent);
         }
     }
