@@ -46,11 +46,6 @@ public class CoursesViewAdapter extends RecyclerView.Adapter<CoursesViewAdapter.
         return this.courses.size();
     }
 
-//    public void addCourses(Course course) {
-//        this.course = course;
-//        this.courseTextView.setText(course.getCourse());
-//    }
-
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView courseTextView;
         private Course course;
