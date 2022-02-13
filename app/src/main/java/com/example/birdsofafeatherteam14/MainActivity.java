@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int NO_ID_SET = -999999;
 
-
     String profile_pic_url;
 
     @Override
