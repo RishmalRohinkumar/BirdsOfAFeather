@@ -38,4 +38,11 @@ public class StudentWithCourses implements IStudent {
     public List<Course> getCourses() {
         return this.courses;
     }
+
+//    public StudentWithCourses(int id, String name, String photo, List<Course> courses) {
+//        this.student.studentId = id;
+//        this.student.name = name;
+//        this.student.photo = photo;
+//        this.courses = courses;
+//    }
 }

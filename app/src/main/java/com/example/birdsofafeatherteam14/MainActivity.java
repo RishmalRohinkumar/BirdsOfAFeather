@@ -46,10 +46,6 @@ public class MainActivity extends AppCompatActivity {
     protected RecyclerView.LayoutManager studentLayoutManager;
     protected StudentViewAdapter studentViewAdapter;
 
-    protected Course course0 = new Course(0, 0, 2022, 110, "CSE", "Winter");
-    protected Course course1 = new Course(1, 0, 2022, 105, "CSE", "Winter");
-    protected Course course2 = new Course(0, 1, 2022, 110, "CSE", "Winter");
-
     protected AppDatabase db;
 
     private int studentId;
