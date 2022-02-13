@@ -14,7 +14,7 @@ public class Student {
     }
 
     @PrimaryKey
-    @ColumnInfo(name = "id")
+    @ColumnInfo(name = "student_id")
     public int studentId;
 
     @ColumnInfo(name = "name")
@@ -22,4 +22,10 @@ public class Student {
 
     @ColumnInfo(name = "photo")
     public String photo;
+
+    public String getName() {return name;}
+
+    public String getPhoto() {return photo;}
+
+    public int getId() {return this.studentId;}
 }

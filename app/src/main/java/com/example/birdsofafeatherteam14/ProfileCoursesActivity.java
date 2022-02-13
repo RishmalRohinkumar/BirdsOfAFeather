@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.birdsofafeatherteam14.model.IStudent;
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Student;
@@ -88,8 +87,8 @@ public class ProfileCoursesActivity extends AppCompatActivity {
 
         // Set up Database and add the student to it
         AppDatabase db = AppDatabase.singleton(this);
-        Student student = new Student(db.studentWithCoursesDAO().count()+1, name, imageUrl);
-        db.studentWithCoursesDAO().insert(student);
+        Student student = new Student(db.studentDAO().count()+1, name, imageUrl);
+        db.studentDAO().insert(student);
 
         // track the id of the courses since we aren't adding them to the database as they are entered,
         // only once the submit button is pressed

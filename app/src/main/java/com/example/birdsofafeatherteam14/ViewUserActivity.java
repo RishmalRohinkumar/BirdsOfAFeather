@@ -12,13 +12,13 @@ import android.widget.TextView;
 
 import java.util.*;
 
-import com.example.birdsofafeatherteam14.model.IStudent;
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
+import com.example.birdsofafeatherteam14.model.db.Student;
 import com.squareup.picasso.Picasso;
 
 public class ViewUserActivity extends AppCompatActivity {
-    private IStudent student;
+    private Student student;
     private AppDatabase db;
 
     private RecyclerView coursesRecyclerView;
@@ -34,7 +34,7 @@ public class ViewUserActivity extends AppCompatActivity {
          int studentId = intent.getIntExtra("student_id",0);
 
          db = AppDatabase.singleton(this);
-         student = db.studentWithCoursesDAO().get(studentId);
+         student = db.studentDAO().get(studentId);
          List<Course> courses = db.coursesDAO().getForStudent(studentId);
          String url = student.getPhoto();
 

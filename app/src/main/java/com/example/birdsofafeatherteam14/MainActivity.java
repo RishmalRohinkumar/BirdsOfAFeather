@@ -2,13 +2,8 @@ package com.example.birdsofafeatherteam14;
 
 import static com.example.birdsofafeatherteam14.Utilities.showAlert;
 
-import android.content.Context;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,14 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 
 
-import com.example.birdsofafeatherteam14.model.DummyStudent;
-import com.example.birdsofafeatherteam14.model.IStudent;
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Student;
@@ -31,7 +21,6 @@ import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -97,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateStudentViews() {
         if (db != null) {
-            List<? extends IStudent> students = db.studentWithCoursesDAO().getAll();
+            List<? extends Student> students = db.studentDAO().getAll();
 
             studentRecyclerView = findViewById(R.id.students_view);
 
@@ -142,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
             String[] splitByNewline = str.split("\n");
             String name = splitByNewline[0].split(",")[0];
             String url = splitByNewline[1].split(",")[0];
-            Student student = new Student(db.studentWithCoursesDAO().count()+1, name, url);
+            Student student = new Student(db.studentDAO().count()+1, name, url);
 
             List<Course> courses = new ArrayList<Course>();
             int currCourseId = db.coursesDAO().count() + 1;
@@ -163,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
 
             // only add to db if all good and nothing went wrong earlier
 
-            db.studentWithCoursesDAO().insert(student);
+            db.studentDAO().insert(student);
             for (Course c : courses) {
                 db.coursesDAO().insert(c);
             }
