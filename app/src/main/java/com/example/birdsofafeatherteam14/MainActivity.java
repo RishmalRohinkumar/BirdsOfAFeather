@@ -1,5 +1,7 @@
 package com.example.birdsofafeatherteam14;
 
+import static com.example.birdsofafeatherteam14.Utilities.showAlert;
+
 import android.content.Context;
 import android.os.Bundle;
 
@@ -19,6 +21,7 @@ import com.example.birdsofafeatherteam14.model.DummyStudent;
 import com.example.birdsofafeatherteam14.model.IStudent;
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
+import com.example.birdsofafeatherteam14.model.db.Student;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
 
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private MessageListener messageListener;
     private static final String TAG = "BOAF-14";
 
+
     protected RecyclerView studentRecyclerView;
     protected RecyclerView.LayoutManager studentLayoutManager;
     protected StudentViewAdapter studentViewAdapter;
@@ -40,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     protected Course course2 = new Course(0, 1, 2022, 110, "CSE", "Winter");
 
     protected AppDatabase db;
+
+    private int studentId;
 
     public Course[] courses0 = new Course[]{course0, course1};
     public Course[] courses1 = new Course[]{course2};
@@ -68,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 // Put stuff in the database
                 if (db != null) {
                     String student_data = new String(message.getContent());
-                    // call helper method to add student to database
+                    addStudentCSVStringToDb(student_data);
                 }
             }
 
@@ -78,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        int studentId = getIntent().getIntExtra("student_id", NO_ID_SET);
+        this.studentId = getIntent().getIntExtra("student_id", NO_ID_SET);
         List<String> mockStudents = getIntent().getStringArrayListExtra("mock_students");
         // In the future, maybe store the ID of the current user somewhere else in the database
         // we can store which is the user student between instances of the app
@@ -89,9 +95,6 @@ public class MainActivity extends AppCompatActivity {
             // in the else clause
             Intent intent = new Intent(this, ProfileNameActivity.class);
             startActivity(intent);
-        } else if (!mockStudents.isEmpty()) {
-            // We have mock students we want to add.
-            this.messageListener = new MockMessageListenerClass(realListener, mockStudents);
         } else {
             // We have a student Id, so we should set up the database
             db = AppDatabase.singleton(getApplicationContext());
@@ -104,6 +107,11 @@ public class MainActivity extends AppCompatActivity {
 
             studentViewAdapter = new StudentViewAdapter(students);
             studentRecyclerView.setAdapter(studentViewAdapter);
+
+            if (!mockStudents.isEmpty()) {
+                // we have mock students we want to add
+                this.messageListener = new MockMessageListenerClass(realListener, mockStudents);
+            }
         }
     }
 
@@ -118,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Dont think this is doing anything any more probably safe to remove
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -128,5 +137,31 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+    private void addStudentCSVStringToDb(String str) {
+        // All these indices have to do with the format specified in this piazza post:
+        // https://piazza.com/class/kx9gvm79v371z5?cid=466
+        try {
+            String[] splitByNewline = str.split("\n");
+            String name = splitByNewline[0].split(",")[0];
+            String url = splitByNewline[1].split(",")[0];
+            Student student = new Student(db.studentWithCoursesDAO().count()+1, name, url);
+            db.studentWithCoursesDAO().insert(student);
+
+            for (int i = 2; i < splitByNewline.length; i++) {
+                String[] courseInfo = splitByNewline[i].split(",");
+                int courseYear = Integer.parseInt(courseInfo[0]);
+                String courseQuarter = courseInfo[1];
+                String courseSubject = courseInfo[2];
+                int courseNum = Integer.parseInt(courseInfo[3]);
+                Course course = new Course(db.coursesDAO().count() + 1, student.studentId,
+                        courseYear, courseNum, courseSubject, courseQuarter);
+                db.coursesDAO().insert(course);
+            }
+        } catch (IndexOutOfBoundsException e) {
+            showAlert(this, "Error in CSV formatting: " + e.toString());
+        }
+
     }
 }
