@@ -55,7 +55,7 @@ public class ProfileCoursesActivity extends AppCompatActivity {
 
         TextView error_text = findViewById(R.id.error_textview);
 
-        if (course_number <= 0) {
+        if (course_number < 0) {
             error_text.setText("That is an invalid Course Number.");
         }
 

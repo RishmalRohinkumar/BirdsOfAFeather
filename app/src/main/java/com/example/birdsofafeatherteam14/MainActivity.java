@@ -28,19 +28,7 @@ public class MainActivity extends AppCompatActivity {
     protected RecyclerView.LayoutManager studentLayoutManager;
     protected StudentViewAdapter studentViewAdapter;
 
-    protected Course course0 = new Course(0, 0, 2022, 110, "CSE", "Winter");
-    protected Course course1 = new Course(1, 0, 2022, 105, "CSE", "Winter");
-    protected Course course2 = new Course(0, 1, 2022, 110, "CSE", "Winter");
-
     protected AppDatabase db;
-
-    public Course[] courses0 = new Course[]{course0, course1};
-    public Course[] courses1 = new Course[]{course2};
-
-    protected IStudent[] data = {
-            new DummyStudent(0, "Jane Doe", "photo0", courses0),
-            new DummyStudent(1, "John Doe", "photo1", courses1)
-    };
 
     private static final int NO_ID_SET = -999999;
 
