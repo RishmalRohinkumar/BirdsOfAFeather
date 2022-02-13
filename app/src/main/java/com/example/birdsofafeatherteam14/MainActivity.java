@@ -50,18 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int studentId;
 
-    public Course[] courses0 = new Course[]{course0, course1};
-    public Course[] courses1 = new Course[]{course2};
-
-    protected IStudent[] data = {
-            new DummyStudent(0, "Jane Doe", "photo0", courses0),
-            new DummyStudent(1, "John Doe", "photo1", courses1)
-    };
-
     public static final int NO_ID_SET = -999999;
-
-
-    String profile_pic_url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
