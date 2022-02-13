@@ -58,4 +58,15 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.85"  />
+
+    <TextView
+        android:id="@+id/warning_message_mock_bluetooth"
+        android:layout_width="322dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="43dp"
+        android:layout_marginTop="27dp"
+        android:text="IMPORTANT: make sure to strip any extra new lines from the pasted csv."
+        android:textColor="#FF0000"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bluetooth_enter_button" />
 </androidx.constraintlayout.widget.ConstraintLayout>

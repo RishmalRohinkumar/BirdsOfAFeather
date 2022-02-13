@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                         courseYear, courseNum, courseSubject, courseQuarter);
                 db.coursesDAO().insert(course);
             }
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException | NumberFormatException e) {
             showAlert(this, "Error in CSV formatting: " + e.toString());
         }
 
