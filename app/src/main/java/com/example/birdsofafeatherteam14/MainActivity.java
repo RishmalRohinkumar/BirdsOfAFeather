@@ -158,20 +158,33 @@ public class MainActivity extends AppCompatActivity {
             String name = splitByNewline[0].split(",")[0];
             String url = splitByNewline[1].split(",")[0];
             Student student = new Student(db.studentWithCoursesDAO().count()+1, name, url);
-            db.studentWithCoursesDAO().insert(student);
 
+            List<Course> courses = new ArrayList<Course>();
+            int currCourseId = db.coursesDAO().count() + 1;
             for (int i = 2; i < splitByNewline.length; i++) {
                 String[] courseInfo = splitByNewline[i].split(",");
                 int courseYear = Integer.parseInt(courseInfo[0]);
                 String courseQuarter = courseInfo[1];
                 String courseSubject = courseInfo[2];
                 int courseNum = Integer.parseInt(courseInfo[3]);
-                Course course = new Course(db.coursesDAO().count() + 1, student.studentId,
+                // POST INCREMENT SO IT'S ONE GREATER FOR THE NEXT COURSE
+                // DOING IT THIS WAY BECAUSE WE ARE NOT ADDING COURSES TO THE DB
+                // IN THIS LOOP, WE DO IT AT THE END SO THE .count FUNCTION WILL
+                // KEEP RETURNING THE SAME VALUE
+                Course course = new Course(currCourseId++, student.studentId,
                         courseYear, courseNum, courseSubject, courseQuarter);
-                db.coursesDAO().insert(course);
+                courses.add(course);
             }
+
+            // only add to db if all good and nothing went wrong earlier
+
+            db.studentWithCoursesDAO().insert(student);
+            for (Course c : courses) {
+                db.coursesDAO().insert(c);
+            }
+
         } catch (IndexOutOfBoundsException | NumberFormatException e) {
-            showAlert(this, "Error in CSV formatting: " + e.toString());
+            showAlert(this, "Error in CSV formatting. Please make sure there is only one newline between each row. If you can't get it to work, then please ask Tyler.");
         }
 
     }
