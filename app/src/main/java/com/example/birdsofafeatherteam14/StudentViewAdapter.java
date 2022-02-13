@@ -10,14 +10,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.birdsofafeatherteam14.model.IStudent;
+import com.example.birdsofafeatherteam14.model.db.Student;
 
 import java.util.List;
 
 public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.ViewHolder> {
-    private final List<? extends IStudent> students;
+    private final List<? extends Student> students;
 
-    public StudentViewAdapter(List<? extends IStudent> students) {
+    public StudentViewAdapter(List<? extends Student> students) {
         super();
         this.students = students;
     }
@@ -46,7 +46,7 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
             extends RecyclerView.ViewHolder
             implements View.OnClickListener {
         private final TextView studentNameView;
-        private IStudent student;
+        private Student student;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -54,7 +54,7 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
             itemView.setOnClickListener(this);
         }
 
-        public void setStudent(IStudent student) {
+        public void setStudent(Student student) {
             this.student = student;
             this.studentNameView.setText(student.getName());
         }
@@ -64,9 +64,6 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
             Context context = view.getContext();
             Intent intent = new Intent(context, ViewUserActivity.class);
             intent.putExtra("student_id", this.student.getId());
-//            intent.putExtra("student_name", this.student.getName());
-//            intent.putExtra("student_picture", this.student.getPhoto());
-//            intent.putExtra("student_courses", this.student.getCourses().toArray());
             context.startActivity(intent);
         }
     }

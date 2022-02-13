@@ -14,7 +14,6 @@ import java.util.ArrayList;
 
 public class MockBluetoothActivity extends AppCompatActivity {
     public ArrayList<String> messages = new ArrayList<String>();
-    public int studentId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

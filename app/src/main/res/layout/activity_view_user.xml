@@ -9,70 +9,56 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/courses_view"
-        android:layout_width="406dp"
-        android:layout_height="285dp"
-        android:layout_marginStart="2dp"
-        android:layout_marginTop="358dp"
-        android:layout_marginEnd="3dp"
-        android:layout_marginBottom="88dp"
+        android:layout_width="411dp"
+        android:layout_height="367dp"
+        android:layout_marginTop="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <TextView
         android:id="@+id/other_student_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="42dp"
-        android:layout_marginEnd="337dp"
-        android:layout_marginBottom="670dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginTop="21dp"
         android:text="TextView"
+        android:textStyle="bold"
         android:textSize="32dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.416" />
+        app:layout_constraintTop_toBottomOf="@+id/goback_button" />
 
     <ImageView
         android:id="@+id/other_Student_picture"
         android:layout_width="178dp"
         android:layout_height="150dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        android:layout_marginStart="116dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.196"
+        app:layout_constraintTop_toBottomOf="@+id/other_student_name"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="22dp"
         android:text="Shared Courses"
+        android:textStyle="bold"
         android:textSize="26dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.069"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.438" />
+        app:layout_constraintTop_toBottomOf="@+id/other_Student_picture" />
 
     <Button
         android:id="@+id/goback_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="33dp"
-        android:layout_marginTop="655dp"
-        android:layout_marginEnd="284dp"
-        android:layout_marginBottom="28dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="28dp"
+        android:onClick="clickGoBackOnViewOtherStudentActivity"
         android:text="GO BACK"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
