@@ -18,9 +18,6 @@ import java.util.List;
 
 public class ProfileCoursesActivity extends AppCompatActivity {
     private List<Course> coursesToAdd;
-    // track the id of the courses since we aren't adding them to the database as they are entered,
-    // only once the submit button is pressed
-    private int currentCourseId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +55,7 @@ public class ProfileCoursesActivity extends AppCompatActivity {
 
         TextView error_text = findViewById(R.id.error_textview);
 
-        if (course_number <= 0) {
+        if (course_number < 0) {
             error_text.setText("That is an invalid Course Number.");
         }
 
@@ -94,7 +91,9 @@ public class ProfileCoursesActivity extends AppCompatActivity {
         Student student = new Student(db.studentWithCoursesDAO().count()+1, name, imageUrl);
         db.studentWithCoursesDAO().insert(student);
 
-        currentCourseId = db.coursesDAO().count() + 1;
+        // track the id of the courses since we aren't adding them to the database as they are entered,
+        // only once the submit button is pressed
+        int currentCourseId = db.coursesDAO().count() + 1;
 
         // Go through courses we want to add and add them to the database
         for (Course course : coursesToAdd) {
@@ -106,7 +105,7 @@ public class ProfileCoursesActivity extends AppCompatActivity {
         // app so the main activity can query the database with that id
         Intent intent = new Intent(this, MainActivity.class);
         // Tell android that the Main Activity is already on the stack, so lets go to the main activity
-        // and get rid of everything that is ontop of it
+        // and get rid of everything that is on top of it
         // Once we return to the main activity it will be on top of the stack
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         // Tell the Main Activity we already initialized a student, and give it the ID so it can find

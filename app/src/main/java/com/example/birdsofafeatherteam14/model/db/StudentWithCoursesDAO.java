@@ -24,4 +24,6 @@ public interface StudentWithCoursesDAO {
     // but it should work like this
     @Insert
     void insert(Student student);
+//    @Insert
+//    void insert(StudentWithCoursesDAO studentWithCoursesDAO);
 }
