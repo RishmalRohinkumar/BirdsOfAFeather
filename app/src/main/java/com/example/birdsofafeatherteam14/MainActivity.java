@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
                 if (db != null) {
                     String student_data = new String(message.getContent());
                     addStudentCSVStringToDb(student_data);
-                    updateStudentViews();
                 }
             }
 
