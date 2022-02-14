@@ -4,4 +4,13 @@
     <string name="app_name">Birds of a Feather</string>
     <string name="name_enter_error">You must enter a name</string>
     <string name="start_button">Start</string>
+
+    <string-array name="quarters">
+        <item>FA</item>
+        <item>WI</item>
+        <item>SP</item>
+        <item>SS1</item>
+        <item>SS2</item>
+        <item>SSS</item>
+    </string-array>
 </resources>

@@ -4,18 +4,23 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Student;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileCoursesActivity extends AppCompatActivity {
+public class ProfileCoursesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private List<Course> coursesToAdd;
 
     @Override
@@ -24,6 +29,13 @@ public class ProfileCoursesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile_courses);
 
         coursesToAdd = new ArrayList<Course>();
+
+        // Set up Dropdown menus for Quarter select
+        Spinner quarter_spinner = (Spinner) findViewById(R.id.enter_quarter);
+        ArrayAdapter<CharSequence> quarter_adapter = ArrayAdapter.createFromResource(this,
+                R.array.quarters, android.R.layout.simple_spinner_item);
+        quarter_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        quarter_spinner.setAdapter(quarter_adapter);
 
         /*
         Old code where we were already populating the current courses for a student that might already
@@ -41,10 +53,21 @@ public class ProfileCoursesActivity extends AppCompatActivity {
         */
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+        parent.getItemAtPosition(pos);
+
+    }
+
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
     public void onEnterButtonClicked(View view) {
         EditText subject_text = findViewById(R.id.enter_subject);
         EditText course_number_text = findViewById(R.id.enter_course_number);
-        EditText quarter_text = findViewById(R.id.enter_quarter);
+//        EditText quarter_text = findViewById(R.id.enter_quarter);
+
         EditText year_text = findViewById(R.id.enter_year);
 
         String subject = subject_text.getText().toString().toUpperCase();
@@ -74,9 +97,9 @@ public class ProfileCoursesActivity extends AppCompatActivity {
         }
     }
 
-    public void onBackButtonClicked(View view) {
-
-    }
+//    public void onBackButtonClicked(View view) {
+//
+//    }
 
     public void onSubmitButtonClicked(View view) {
         // Get the name and image url that were passed into this activity
