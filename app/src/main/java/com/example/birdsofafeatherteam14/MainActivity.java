@@ -50,25 +50,9 @@ public class MainActivity extends AppCompatActivity {
         
         setTitle("Birds of a Feather");
 
-        // Set up bluetooth
-        this.realListener = new MessageListener() {
-            @Override
-            public void onFound(@NonNull Message message) {
-                // Put stuff in the database
-                if (db != null) {
-                    String student_data = new String(message.getContent());
-                    addStudentCSVStringToDb(student_data);
-                }
-            }
+        setUpRealBluetooth();
 
-            @Override
-            public void onLost(@NonNull Message message) {
-                // Does nothing atm
-            }
-        };
-
-        this.studentId = getIntent().getIntExtra("student_id", NO_ID_SET);
-        //  make sure to store in sharedPreferences
+        setCurrentStudentID();
 
         // In the future, maybe store the ID of the current user somewhere else in the database
         // we can store which is the user student between instances of the app
@@ -82,16 +66,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // We have a student Id, so we should set up the database
             db = AppDatabase.singleton(getApplicationContext());
-
-            //SharedPreferences for studentId
-            SharedPreferences preferences = getSharedPreferences("BOAF_PREFERENCES", MODE_PRIVATE);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putInt("currentStudentId", studentId);
-            editor.apply();
         }
     }
 
-
+    // Updates the recycler views with the other students that have overlapping classes
+    // should only be called when the start button is clicked
     private void updateStudentViews() {
         if (db != null) {
             List<? extends Student> students = db.studentDAO().getAll();
@@ -157,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Deals with converting the CSV string from the Mock Bluetooth Task
+    // and adds the corresponded students and courses to the databse
     private void addStudentCSVStringToDb(String str) {
         // All these indices have to do with the format specified in this piazza post:
         // https://piazza.com/class/kx9gvm79v371z5?cid=466
@@ -197,17 +178,61 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // Sends us to the mock bluetooth activity and sets up
+    // the necessary information so that we can receive the result from it
     public void goToMockBluetoothActivity(View view) {
         Intent intent = new Intent(this, MockBluetoothActivity.class);
         startActivityForResult(intent, START_MOCK_BLUETOOTH);
     }
 
+    // Sends fake bluetooth messages based upon the CSV string data from the bluetooth activity
     public void setUpMockBluetooth(List<String> mockStudents) {
         this.messageListener = new MockMessageListenerClass(this.realListener, mockStudents);
     }
 
 
+    // Runs when the start button is clicked and displays the screen with all of the
+    // other students which have overlapping courses.
     public void onStartClicked(View view) {
         updateStudentViews();
+    }
+
+    // Set up the real blue tooth listener to add people to the database
+    // as messages are received.
+    public void setUpRealBluetooth() {
+        // Set up bluetooth
+        this.realListener = new MessageListener() {
+            @Override
+            public void onFound(@NonNull Message message) {
+                // Put stuff in the database
+                if (db != null) {
+                    String student_data = new String(message.getContent());
+                    addStudentCSVStringToDb(student_data);
+                }
+            }
+
+            @Override
+            public void onLost(@NonNull Message message) {
+                // Does nothing atm
+            }
+        };
+    }
+
+    // Sets the current student ID to the Main Activity studentId
+    // variable, and sets it in shared preferences so other activities can
+    // access it.
+    public void setCurrentStudentID() {
+        // This is set if the ProfileCourseActivity has looped back to the main activity
+        // and has set the current student id in an extra
+        this.studentId = getIntent().getIntExtra("student_id", NO_ID_SET);
+
+        // We only want to set the student if an ID has actually been set
+        if (this.studentId != NO_ID_SET) {
+            //SharedPreferences for studentId
+            SharedPreferences preferences = getSharedPreferences("BOAF_PREFERENCES", MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putInt("currentStudentId", studentId);
+            editor.apply();
+        }
     }
 }
