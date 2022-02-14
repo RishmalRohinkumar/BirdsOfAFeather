@@ -58,9 +58,9 @@ public class ProfileCoursesActivity extends AppCompatActivity {
             error_text.setText("That is an invalid Course Number.");
         }
 
-        if (quarter.equals("Fall") || quarter.equals("Winter") || quarter.equals("Spring")||
-            quarter.equals("Summer Session I") || quarter.equals("Summer Session II") ||
-            quarter.equals("Special Summer Session")) {
+        if (quarter.equals("FA") || quarter.equals("WI") || quarter.equals("SP")||
+            quarter.equals("SS1") || quarter.equals("SS2") ||
+            quarter.equals("SSS")) {
 
             // set course/student id later once we are adding to the database
             Course new_course = new Course(0, 0, year, course_number, subject, quarter);
