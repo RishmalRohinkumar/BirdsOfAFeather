@@ -62,7 +62,7 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
 
         public void setStudent(Student student, Integer sharedCourses) {
             this.student = student;
-            this.studentNameView.setText(student.getName() + "(" + sharedCourses.toString() + ")");
+            this.studentNameView.setText(student.getName() + " (" + sharedCourses.toString() + ")");
             Picasso.get().load(student.getPhoto()).into(this.studentImageView);
         }
 
