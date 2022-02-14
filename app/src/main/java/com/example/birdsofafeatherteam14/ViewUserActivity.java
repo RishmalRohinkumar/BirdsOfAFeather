@@ -32,6 +32,8 @@ public class ViewUserActivity extends AppCompatActivity {
 
          Intent intent = getIntent();
          int studentId = intent.getIntExtra("student_id",0);
+         // need to check sharedPreferences for "current_student_id"
+        // use this information to only display the overlap courses
 
          db = AppDatabase.singleton(this);
          student = db.studentDAO().get(studentId);
@@ -43,6 +45,7 @@ public class ViewUserActivity extends AppCompatActivity {
          coursesLayoutManager = new LinearLayoutManager(this);
          coursesRecyclerView.setLayoutManager(coursesLayoutManager);
 
+         // this courses list should only be the overlap courses
          coursesViewAdapter = new CoursesViewAdapter(courses);
          coursesRecyclerView.setAdapter(coursesViewAdapter);
 

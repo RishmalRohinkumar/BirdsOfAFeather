@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
         };
 
         this.studentId = getIntent().getIntExtra("student_id", NO_ID_SET);
+        //  make sure to store in sharedPreferences
+
         // In the future, maybe store the ID of the current user somewhere else in the database
         // we can store which is the user student between instances of the app
         if (studentId == NO_ID_SET) {
