@@ -96,7 +96,27 @@ public class MainActivity extends AppCompatActivity {
         if (db != null) {
             List<? extends Student> students = db.studentDAO().getAll();
 
-            students.remove(db.studentDAO().get(studentId));
+            List<Integer> commonClasses= new ArrayList<Integer>();
+
+            Student user = db.studentDAO().get(studentId);
+
+            //Remove user from student list
+            students.remove(user);
+
+            //List out common classes
+            for(Student student : students){
+                StudentCourseComparator comparator = new StudentCourseComparator
+                        (db.coursesDAO().getForStudent(studentId), db.coursesDAO().getForStudent(student.getId()));
+                List<Course> overlapList = comparator.compare();
+                commonClasses.add(overlapList.size());
+            }
+
+            for (int i = 0; i < commonClasses.size(); i++){
+                if (commonClasses.get(i) == 0){
+                    commonClasses.remove(i);
+                    students.remove(i);
+                }
+            }
 
             studentRecyclerView = findViewById(R.id.students_view);
 
