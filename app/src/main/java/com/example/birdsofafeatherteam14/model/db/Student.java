@@ -28,4 +28,16 @@ public class Student {
     public String getPhoto() {return photo;}
 
     public int getId() {return this.studentId;}
+
+    @Override
+    public boolean equals(Object obj){
+        if (obj == null) return false;
+
+        if (obj.getClass() != this.getClass()) return false;
+
+        Student student = (Student) obj;
+        if (this.studentId != student.studentId) return false;
+
+        return true;
+    }
 }
