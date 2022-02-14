@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         if (db != null) {
             List<? extends Student> students = db.studentDAO().getAll();
 
-            List<Integer> commonClasses= new ArrayList<Integer>();
+            List<Integer> classes= new ArrayList<Integer>();
 
             Student user = db.studentDAO().get(studentId);
 
@@ -108,13 +108,16 @@ public class MainActivity extends AppCompatActivity {
                 StudentCourseComparator comparator = new StudentCourseComparator
                         (db.coursesDAO().getForStudent(studentId), db.coursesDAO().getForStudent(student.getId()));
                 List<Course> overlapList = comparator.compare();
-                commonClasses.add(overlapList.size());
+                classes.add(overlapList.size());
             }
 
-            for (int i = 0; i < commonClasses.size(); i++){
-                if (commonClasses.get(i) == 0){
-                    commonClasses.remove(i);
-                    students.remove(i);
+            List<Student> commonStudents = new ArrayList<Student>();
+            List<Integer> commonClasses = new ArrayList<Integer>();
+
+            for (int i = 0; i < classes.size(); i++){
+                if (commonClasses.get(i) != 0){
+                    commonClasses.add(commonClasses.get(i));
+                    commonStudents.add(students.get(i));
                 }
             }
 
