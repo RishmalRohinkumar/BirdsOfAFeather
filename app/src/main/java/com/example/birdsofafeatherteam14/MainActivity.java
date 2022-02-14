@@ -101,6 +101,11 @@ public class MainActivity extends AppCompatActivity {
                 classes.add(overlapList.size());
             }
 
+            // These lists are the final versions which will be passed into the recycler views
+            // and ultimately displayed on the screen. They have been curated to only include
+            // students that the current student has common classes with. The commonClasses<Integer>
+            // list is so that the recycler view knows how many common classes the current user student
+            // and the student in question have, so it can display that information to the screen.
             List<Student> commonStudents = new ArrayList<Student>();
             List<Integer> commonClasses = new ArrayList<Integer>();
 
