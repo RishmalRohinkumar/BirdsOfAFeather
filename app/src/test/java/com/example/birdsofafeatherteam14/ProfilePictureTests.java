@@ -24,7 +24,11 @@ public class ProfilePictureTests {
     //public ActivityScenarioRule<ProfilePictureActivity> scenarioRule = new ActivityScenarioRule<ProfilePictureActivity>(ProfilePictureActivity.class);
 
 
-    //We failed to carry out the test because RoboElectric and Picasso has integration error. We were not able to figure out how to Mock picasso
+    //We failed to carry out the test because RoboElectric and Picasso has integration error.
+    // We were not able to figure out how to Mock picasso
+    //However, if Picasso were able to be mocked, this is what some of the tests would look like
+    // We would also include a test to make sure that the ImageView didn't change on an invalidURL
+    // that wasn't empty, and that it would change the ImageView if there was a valid image URL
 
     /*@Test
     public void testInitialDisplay() {
