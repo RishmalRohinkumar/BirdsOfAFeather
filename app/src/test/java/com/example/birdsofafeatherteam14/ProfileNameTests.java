@@ -21,6 +21,7 @@ public class ProfileNameTests {
     public ActivityScenarioRule<ProfileNameActivity> scenarioRule =
             new ActivityScenarioRule<ProfileNameActivity>(ProfileNameActivity.class);
 
+    // Test to make sure that the display is initialized correctly
     @Test
     public void testInitialDisplay() {
         ActivityScenario<ProfileNameActivity> scenario = scenarioRule.getScenario();
@@ -34,6 +35,7 @@ public class ProfileNameTests {
         });
     }
 
+    // Test to make sure empty name input fails
     @Test
     public void testEmptyNameInput() {
         ActivityScenario<ProfileNameActivity> scenario = scenarioRule.getScenario();
@@ -52,6 +54,7 @@ public class ProfileNameTests {
         });
     }
 
+    // Test to make sure valid name input is successfull
     @Test
     public void testValidNameInput() {
         ActivityScenario<ProfileNameActivity> scenario = scenarioRule.getScenario();
