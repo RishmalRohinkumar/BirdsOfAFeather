@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             studentLayoutManager = new LinearLayoutManager(this);
             studentRecyclerView.setLayoutManager(studentLayoutManager);
 
-            studentViewAdapter = new StudentViewAdapter(commonStudents);
+            studentViewAdapter = new StudentViewAdapter(commonStudents, commonClasses);
             studentRecyclerView.setAdapter(studentViewAdapter);
         }
     }
