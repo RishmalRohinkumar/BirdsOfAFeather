@@ -21,12 +21,14 @@ public class StudentCourseComparatorTests {
         s2_courses = new ArrayList<Course>();
     }
 
+    // Test to make sure the comparator works when the two lists are empty
     @Test
     public void testEmptyLists() {
         StudentCourseComparator scc = new StudentCourseComparator(s1_courses, s2_courses);
         assertEquals(true, scc.compare().isEmpty());
     }
 
+    // Test to make sure the comparator returns an empty list when there is no overlap
     @Test
     public void testNoOverlapLists() {
         s1_courses.add(new Course(0, 0, 2020, 110, "CSE", "FA"));
@@ -36,6 +38,8 @@ public class StudentCourseComparatorTests {
         assertEquals(true, scc.compare().isEmpty());
     }
 
+    // Test to make sure that the comparator returns the overlap correctly when there
+    // is overlap
     @Test
     public void testOverlapLists() {
         s1_courses.add(new Course(0, 0, 2020, 110, "CSE", "FA"));
