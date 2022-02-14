@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="enter_subject" type="id"></item>
+    <item name="title_textview" type="id"></item>
+    <item name="stored_courses_display" type="id"></item>
+    <item name="prompt_user_textview" type="id"></item>
+    <item name="course_subject_textview" type="id"></item>
+    <item name="course_number_textview" type="id"></item>
+    <item name="course_quarter_textview" type="id"></item>
+    <item name="course_year_textview" type="id"></item>
+    <item name="enter_course_number" type="id"></item>
+    <item name="enter_quarter" type="id"></item>
+    <item name="enter_year" type="id"></item>
+    <item name="error_textview" type="id"></item>
+    <item name="enter_button" type="id"></item>
+    <item name="submit_button" type="id"></item>
+    <item name="back_button" type="id"></item>
+</resources>
