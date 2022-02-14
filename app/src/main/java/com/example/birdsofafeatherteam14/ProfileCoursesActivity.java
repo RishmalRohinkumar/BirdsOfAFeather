@@ -74,9 +74,9 @@ public class ProfileCoursesActivity extends AppCompatActivity {
         }
     }
 
-    public void onBackButtonClicked(View view) {
-
-    }
+//    public void onBackButtonClicked(View view) {
+//
+//    }
 
     public void onSubmitButtonClicked(View view) {
         // Get the name and image url that were passed into this activity
