@@ -115,8 +115,8 @@ public class MainActivity extends AppCompatActivity {
             List<Integer> commonClasses = new ArrayList<Integer>();
 
             for (int i = 0; i < classes.size(); i++){
-                if (commonClasses.get(i) != 0){
-                    commonClasses.add(commonClasses.get(i));
+                if (classes.get(i) != 0){
+                    commonClasses.add(classes.get(i));
                     commonStudents.add(students.get(i));
                 }
             }
