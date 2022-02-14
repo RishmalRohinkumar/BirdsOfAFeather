@@ -32,13 +32,20 @@ public class ViewUserActivity extends AppCompatActivity {
 
          Intent intent = getIntent();
          int studentId = intent.getIntExtra("student_id",0);
+
+         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+         int currStudentId = sharedPreferences.getInt("current_student_id", 0);
          // need to check sharedPreferences for "current_student_id"
-        // use this information to only display the overlap courses
+         // use this information to only display the overlap courses
 
          db = AppDatabase.singleton(this);
          student = db.studentDAO().get(studentId);
          List<Course> courses = db.coursesDAO().getForStudent(studentId);
+         List<Course> currStudentCourses = db.coursesDAO().getForStudent(currStudentId);
          String url = student.getPhoto();
+
+         StudentCourseComparator comparator = new StudentCourseComparator(currStudentCourses, courses);
+         List<Course> overlapList = comparator.compare();
 
          // Set up the recycler view to show our database contents.
          coursesRecyclerView = findViewById(R.id.courses_view);
@@ -46,7 +53,7 @@ public class ViewUserActivity extends AppCompatActivity {
          coursesRecyclerView.setLayoutManager(coursesLayoutManager);
 
          // this courses list should only be the overlap courses
-         coursesViewAdapter = new CoursesViewAdapter(courses);
+         coursesViewAdapter = new CoursesViewAdapter(overlapList);
          coursesRecyclerView.setAdapter(coursesViewAdapter);
 
         TextView name_view = (TextView) findViewById(R.id.other_student_name);
