@@ -40,4 +40,22 @@ public class Course {
         String year = String.valueOf(courseYear);
         return courseName + " " + num + " " + courseQuarter + " " + year;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+
+        if (this == o) {
+            return true;
+        }
+
+        return ((o instanceof Course) && this.getCourse().equals( ((Course)o).getCourse()) );
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getCourse().hashCode();
+    }
 }
