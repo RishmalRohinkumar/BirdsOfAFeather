@@ -115,9 +115,9 @@ public class ProfilePictureTests {
             assertEquals(false, picData.equals(afterData));
 
 
-        });*/
+        });
 
-    }
+    }*/
 
 
 
