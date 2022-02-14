@@ -34,7 +34,7 @@ public class ViewUserActivity extends AppCompatActivity {
          int studentId = intent.getIntExtra("student_id",0);
 
          SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-         int currStudentId = sharedPreferences.getInt("current_student_id", 0);
+         int currStudentId = sharedPreferences.getInt("currentStudentId", 0);
          // need to check sharedPreferences for "current_student_id"
          // use this information to only display the overlap courses
 
