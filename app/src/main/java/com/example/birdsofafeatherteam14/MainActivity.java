@@ -2,6 +2,7 @@ package com.example.birdsofafeatherteam14;
 
 import static com.example.birdsofafeatherteam14.Utilities.showAlert;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.view.View;
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Student;
+import com.example.birdsofafeatherteam14.model.db.StudentDAO;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
 
@@ -81,7 +83,12 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // We have a student Id, so we should set up the database
             db = AppDatabase.singleton(getApplicationContext());
-            updateStudentViews();
+
+            //SharedPreferences for studentId
+            SharedPreferences preferences = getSharedPreferences("BOAF_PREFERENCES", MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putInt("currentStudentId", studentId);
+            editor.apply();
         }
     }
 
@@ -89,6 +96,8 @@ public class MainActivity extends AppCompatActivity {
     private void updateStudentViews() {
         if (db != null) {
             List<? extends Student> students = db.studentDAO().getAll();
+
+            students.remove(db.studentDAO().get(studentId));
 
             studentRecyclerView = findViewById(R.id.students_view);
 
@@ -173,5 +182,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void setUpMockBluetooth(List<String> mockStudents) {
         this.messageListener = new MockMessageListenerClass(this.realListener, mockStudents);
+    }
+
+
+    public void onStartClicked(View view) {
+        updateStudentViews();
     }
 }
