@@ -30,6 +30,8 @@ public class MockBluetoothTests {
             Button button = activity.findViewById(R.id.bluetooth_enter_button);
             button.performClick();
 
+            // we aren't sure how to access the message variable in the MockBluetooth class?
+            // Otherwise we would have more test cases dealing with than instance variable
             assertEquals("", message.getText().toString());
 //            assertEquals("Bill,,,\nhttps://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0,,,\n2021,FA,CSE,210\n2022,WI,CSE,110\n2022,SP,CSE,110", messages.get(0));
         });
