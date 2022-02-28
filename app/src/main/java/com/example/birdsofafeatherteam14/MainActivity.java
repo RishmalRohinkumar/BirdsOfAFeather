@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
@@ -43,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private int studentId;
 
     public static final int NO_ID_SET = -999999;
+
+    private static boolean searching = false; // the search button toggles this between true and false
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -234,8 +237,33 @@ public class MainActivity extends AppCompatActivity {
     // other students which have overlapping courses.
     public void onStartClicked(View view) {
         Log.i(TAG, "In onStartClicked");
-        updateStudentViews();
+        toggleSearchStatus();
     }
+
+    private void toggleSearchStatus() {
+        this.searching = !this.searching;
+        Button searchButton = findViewById(R.id.searchButton);
+
+        if (this.searching) {
+            searchButton.setText("Stop");
+            updateStudentViews();
+        } else {
+            searchButton.setText("Start");
+            clearStudentViews();
+        }
+    }
+
+    private void clearStudentViews() {
+        studentRecyclerView = findViewById(R.id.students_view);
+
+        studentLayoutManager = new LinearLayoutManager(this);
+        studentRecyclerView.setLayoutManager(studentLayoutManager);
+
+        // pass in empty lists so nothing is displayed
+        studentViewAdapter = new StudentViewAdapter(new ArrayList<Student>(), new ArrayList<Integer>());
+        studentRecyclerView.setAdapter(studentViewAdapter);
+    }
+
 
     // Set up the real blue tooth listener to add people to the database
     // as messages are received.
@@ -249,8 +277,15 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "Found a bluetooth message!");
                 if (db != null) {
                     Log.i(TAG, "Found a bluetooth message, and am able to act upon it because db is set up.");
-                    String student_data = new String(message.getContent());
-                    addStudentCSVStringToDb(student_data);
+                    if (searching) {
+                        Log.i(TAG, "Actively searching, so will check this message");
+                        String student_data = new String(message.getContent());
+                        addStudentCSVStringToDb(student_data);
+                        // whenever receive a bluetooth message, update the student views
+                        updateStudentViews();
+                    } else {
+                        Log.i(TAG, "Not actively searching, doing nothing with this message");
+                    }
                 } else {
                     Log.i(TAG, "Found a bluetooth message, and am not able to act upon it because db is not set up");
                 }
