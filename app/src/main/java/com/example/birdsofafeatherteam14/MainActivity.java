@@ -268,23 +268,20 @@ public class MainActivity extends AppCompatActivity {
                 // TODO
                 String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
                 newSession = new Session(db.sessionDAO().count(), timeStamp, false);
+                setCurrentSession(newSession);
+                db.sessionDAO().insert(newSession);
+                updateStudentViews();
             } else {
                 // Ask the user to pick a session from the list of sessions, or a new session
-                newSession = pickSessionFromList();
+                pickSessionFromList();
             }
-            setCurrentSession(newSession);
-            db.sessionDAO().insert(newSession);
 
             searchButton.setText("Stop");
-            updateStudentViews();
         } else {
             // Give the session a name if it is unnamed
             Session currSession = getCurrentSession();
             if (!currSession.getIsNamed()) {
-                String newName = getNewSessionName();
-                if (newName != null) {
-                    db.sessionDAO().update(newName, true, currSession.getId());
-                }
+                newSessionNameDialog();
             }
             setNoCurrentSession();
             searchButton.setText("Start");
@@ -292,7 +289,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private String getNewSessionName() {
+    //
+    private void newSessionNameDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Name Session");
 
@@ -306,25 +304,27 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                newSessionNameResult = input.getText().toString();
+                Session currSession = getCurrentSession();
+                String newName = input.getText().toString();
+                if (newName != null && !newName.equals("")) {
+                    AppDatabase database = AppDatabase.singleton(getApplicationContext());
+                    database.sessionDAO().update(newName, true, currSession.getId());
+                }
             }
         });
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                newSessionNameResult = null;
                 dialog.cancel();
             }
         });
 
         builder.show();
-
-        return newSessionNameResult;
     }
 
     // Creates an alert dialog which allows the user to select from the saved sessions, or to create a new
     // one
-    private Session pickSessionFromList() {
+    private void pickSessionFromList() {
         // i hate my life
         List<String> sessionNames = new ArrayList<String>();
         for (Session s : db.sessionDAO().getAll()) {
@@ -346,38 +346,41 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                Session newSession = null;
                 chosenNameResult = sp.getSelectedItem().toString();
+                // Look at chosen name result and return the corresponding session
+                if (chosenNameResult == "New Session") {
+                    String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+                    newSession = new Session(db.sessionDAO().count(), timeStamp, false);
+                }
+                else {
+                    // go through session list and find the session this name corresponds to
+                    List<Session> sessions = db.sessionDAO().getAll();
+                    for (Session s : sessions) {
+                        if (s.getName().equals(chosenNameResult)) {
+                            newSession = s;
+                            break;
+                        }
+                    }
+                }
+
+                if (newSession == null) {
+                    Log.i(TAG, "newSession is NULL!!");
+                    return;
+                }
+
+                setCurrentSession(newSession);
+                db.sessionDAO().insert(newSession);
+                updateStudentViews();
             }
         });
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                chosenNameResult = null;
                 dialog.cancel();
             }
         });
         builder.create().show();
-
-        // Look at chosen name result and return the corresponding session
-        if (chosenNameResult == null) {return null;}
-        else if (chosenNameResult == "New Session") {
-            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-            return new Session(db.sessionDAO().count(), timeStamp, false);
-        }
-        else {
-            // go through session list and find the session this name corresponds to
-            List<Session> sessions = db.sessionDAO().getAll();
-            for (Session s : sessions) {
-                if (s.getName().equals(chosenNameResult)) {
-                    return s;
-                }
-            }
-        }
-        // If we're here then this code is fucked and i hate my life
-        // emergency hotline: 661-713-3184
-        showAlert(this, "ERROR: Certified Bruh Moment. Session selection failed. Defaulting to new session.");
-        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-        return new Session(db.sessionDAO().count(), timeStamp, false);
     }
 
     // Store the current session's id into shared preferences
