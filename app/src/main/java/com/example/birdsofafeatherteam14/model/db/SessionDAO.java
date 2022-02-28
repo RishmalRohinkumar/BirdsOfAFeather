@@ -20,4 +20,7 @@ public interface SessionDAO {
 
     @Query("SELECT COUNT(*) from sessions")
     int count();
+
+    @Query("UPDATE sessions SET name=:newName, is_named=:isNamed WHERE session_id=:id")
+    void update(String newName, boolean isNamed, int id);
 }

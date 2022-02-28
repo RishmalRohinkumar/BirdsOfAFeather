@@ -8,8 +8,10 @@ import androidx.room.PrimaryKey;
 // Essentially links a session id to its corresponding name
 @Entity(tableName = "sessions")
 public class Session {
-    public Session(String name) {
+    public Session(int sessionId, String name, boolean isNamed) {
         this.name = name;
+        this.isNamed = isNamed;
+        this.sessionId = sessionId;
     }
 
     @PrimaryKey
@@ -19,7 +21,12 @@ public class Session {
     @ColumnInfo(name = "name")
     public String name;
 
+    @ColumnInfo(name = "is_named")
+    public boolean isNamed;
+
     public String getName() {return name;}
+
+    public boolean getIsNamed() {return isNamed;}
 
     public int getId() {return this.sessionId;}
 }
