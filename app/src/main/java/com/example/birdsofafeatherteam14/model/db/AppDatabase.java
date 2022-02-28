@@ -28,4 +28,5 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract StudentDAO studentDAO();
     public abstract CoursesDAO coursesDAO();
+    public abstract SessionDAO sessionDAO();
 }
