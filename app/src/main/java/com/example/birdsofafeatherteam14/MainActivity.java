@@ -92,7 +92,10 @@ public class MainActivity extends AppCompatActivity {
         if (db != null) {
             Log.i(TAG, "Database not null in updateStudentViews()");
 
-            List<? extends Student> students = db.studentDAO().getAll();
+            Session currSession = getCurrentSession();
+            if (currSession == null) {return;}
+
+            List<? extends Student> students = db.studentDAO().getAll(currSession.sessionId);
 
             Log.i(TAG, "Received list of students from the database of size: " + students.size());
 
