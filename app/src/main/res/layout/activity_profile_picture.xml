@@ -41,11 +41,11 @@
         tools:srcCompat="@tools:sample/avatars" />
 
     <Button
-        android:id="@+id/backButton"
+        android:id="@+id/contButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="188dp"
-        android:onClick="onGoBackClicked"
+        android:onClick="onContinueClicked"
         android:text="Continue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,7 +53,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/continueButton"
+        android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="248dp"

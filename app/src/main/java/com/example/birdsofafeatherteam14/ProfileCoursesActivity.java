@@ -5,18 +5,30 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Student;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileCoursesActivity extends AppCompatActivity {
+public class ProfileCoursesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private List<Course> coursesToAdd;
+
+    Spinner quarter_spinner = findViewById(R.id.enter_quarter);
+    Spinner year_spinner = findViewById(R.id.enter_year);
+    Spinner size_spinner = findViewById(R.id.enter_size);
+
+    String quarter;
+    int year;
+    String size;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,18 +51,56 @@ public class ProfileCoursesActivity extends AppCompatActivity {
             stored_courses.setText(stored_courses.getText() + courses.get(i).getCourse() + "\n");
         }
         */
+
+        ArrayAdapter<CharSequence> quarters_adapter = ArrayAdapter.createFromResource(this,
+                R.array.quarters_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> years_adapter = ArrayAdapter.createFromResource(this,
+                R.array.years_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> sizes_adapter = ArrayAdapter.createFromResource(this,
+                R.array.sizes_array, android.R.layout.simple_spinner_item);
+
+        quarters_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        years_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sizes_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        quarter_spinner.setAdapter(quarters_adapter);
+        year_spinner.setAdapter(years_adapter);
+        size_spinner.setAdapter(sizes_adapter);
+
+        quarter_spinner.setOnItemSelectedListener(this);
+        year_spinner.setOnItemSelectedListener(this);
+        size_spinner.setOnItemSelectedListener(this);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+        switch (parent.getId()) {
+            case R.id.enter_quarter:
+                String[] quarters = getResources().getStringArray(R.array.quarters_array);
+                quarter = quarters[pos];
+                break;
+            case R.id.enter_year:
+                String[] years = getResources().getStringArray(R.array.years_array);
+                year = Integer.parseInt(years[pos]);
+                break;
+            case R.id.enter_size:
+                String[] sizes = getResources().getStringArray(R.array.sizes_array);
+                size = sizes[pos];
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
     public void onEnterButtonClicked(View view) {
         EditText subject_text = findViewById(R.id.enter_subject);
         EditText course_number_text = findViewById(R.id.enter_course_number);
-        EditText quarter_text = findViewById(R.id.enter_quarter);
-        EditText year_text = findViewById(R.id.enter_year);
 
         String subject = subject_text.getText().toString().toUpperCase();
         int course_number = Integer.parseInt(course_number_text.getText().toString());
-        String quarter = quarter_text.getText().toString();
-        int year = Integer.parseInt(year_text.getText().toString());
 
         TextView error_text = findViewById(R.id.error_textview);
 
@@ -58,9 +108,9 @@ public class ProfileCoursesActivity extends AppCompatActivity {
             error_text.setText("That is an invalid Course Number.");
         }
 
-        if (quarter.equals("Fall") || quarter.equals("Winter") || quarter.equals("Spring")||
-            quarter.equals("Summer Session I") || quarter.equals("Summer Session II") ||
-            quarter.equals("Special Summer Session")) {
+        if (quarter.equals("FA") || quarter.equals("WI") || quarter.equals("SP")||
+            quarter.equals("SS1") || quarter.equals("SS2") ||
+            quarter.equals("SSS")) {
 
             // set course/student id later once we are adding to the database
             Course new_course = new Course(0, 0, year, course_number, subject, quarter);
@@ -72,10 +122,6 @@ public class ProfileCoursesActivity extends AppCompatActivity {
         } else {
             error_text.setText("That is an invalid Quarter.");
         }
-    }
-
-    public void onBackButtonClicked(View view) {
-
     }
 
     public void onSubmitButtonClicked(View view) {

@@ -58,7 +58,7 @@ public class ProfilePictureActivity extends AppCompatActivity {
     }
 
 
-    public void onGoBackClicked(View view){
+    public void onContinueClicked(View view){
         // Continue onto the course selection activity passing along the name and url to it
         Intent intent = new Intent(this, ProfileCoursesActivity.class);
         intent.putExtra("student_name", this.name);
