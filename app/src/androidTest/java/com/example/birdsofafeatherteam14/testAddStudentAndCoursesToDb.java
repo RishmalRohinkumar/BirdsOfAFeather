@@ -19,10 +19,14 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.List;
 
+// These tests ensure that items can be added to the database and then retrieved.
+// They are an example of instrumented tests because they are run on the emulator itself,
+// not mocked through RoboElectric.
 @RunWith(AndroidJUnit4.class)
 public class testAddStudentAndCoursesToDb {
     private AppDatabase db;
 
+    // Makes sure the database is set up before each test case
     @Before
     public void createDb() {
         Context context = ApplicationProvider.getApplicationContext();
@@ -31,12 +35,15 @@ public class testAddStudentAndCoursesToDb {
         db.clearAllTables();
     }
 
+    // Clean up the database after each test case
     @After
     public void closeDb() throws IOException {
         db.clearAllTables();
         db.close();
     }
 
+    // Adds two different students with 1 class each and makes sure the amount of students and courses
+    // in the database is correct.
     @Test
     public void addStudentsAndCoursesAndCheckSize() throws Exception {
         Student student0 = new Student(db.studentDAO().count()+1, "Tyler", "");
@@ -52,6 +59,8 @@ public class testAddStudentAndCoursesToDb {
         assertEquals(2, db.coursesDAO().count());
     }
 
+    // Adds two students to the database, one with two courses and one with one course. It verifies that
+    // the student with two courses has their courses correctly stored in the database.
     @Test
     public void testGetCoursesByStudent() throws Exception {
         Student student0 = new Student(db.studentDAO().count()+1, "Tyler", "");
