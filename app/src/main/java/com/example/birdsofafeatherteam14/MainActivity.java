@@ -352,7 +352,7 @@ public class MainActivity extends AppCompatActivity {
                 Session newSession = null;
                 chosenNameResult = sp.getSelectedItem().toString();
                 // Look at chosen name result and return the corresponding session
-                if (chosenNameResult == "New Session") {
+                if (chosenNameResult.equals("New Session")) {
                     String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
                     newSession = new Session(db.sessionDAO().count(), timeStamp, false);
                 }
