@@ -152,12 +152,13 @@ public class MainActivity extends AppCompatActivity {
                 String courseQuarter = courseInfo[1];
                 String courseSubject = courseInfo[2];
                 int courseNum = Integer.parseInt(courseInfo[3]);
+                String courseSize = courseInfo[4];
                 // POST INCREMENT SO IT'S ONE GREATER FOR THE NEXT COURSE
                 // DOING IT THIS WAY BECAUSE WE ARE NOT ADDING COURSES TO THE DB
                 // IN THIS LOOP, WE DO IT AT THE END SO THE .count FUNCTION WILL
                 // KEEP RETURNING THE SAME VALUE
                 Course course = new Course(currCourseId++, student.studentId,
-                        courseYear, courseNum, courseSubject, courseQuarter);
+                        courseYear, courseNum, courseSubject, courseQuarter, courseSize);
                 courses.add(course);
             }
 
