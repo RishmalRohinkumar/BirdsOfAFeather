@@ -29,18 +29,18 @@ public class StudentCourseComparatorTests {
 
     @Test
     public void testNoOverlapLists() {
-        s1_courses.add(new Course(0, 0, 2020, 110, "CSE", "FA"));
-        s1_courses.add(new Course(0, 0, 2022, 120, "CSE", "SP"));
-        s2_courses.add(new Course(0, 0, 2022, 120, "PHYS", "SP"));
+        s1_courses.add(new Course(0, 0, 2020, 110, "CSE", "FA", "Large"));
+        s1_courses.add(new Course(0, 0, 2022, 120, "CSE", "SP", "Large"));
+        s2_courses.add(new Course(0, 0, 2022, 120, "PHYS", "SP", "Medium"));
         StudentCourseComparator scc = new StudentCourseComparator(s1_courses, s2_courses);
         assertEquals(true, scc.compare().isEmpty());
     }
 
     @Test
     public void testOverlapLists() {
-        s1_courses.add(new Course(0, 0, 2020, 110, "CSE", "FA"));
-        s1_courses.add(new Course(0, 0, 2022, 120, "CSE", "SP"));
-        s2_courses.add(new Course(0, 0, 2022, 120, "CSE", "SP"));
+        s1_courses.add(new Course(0, 0, 2020, 110, "CSE", "FA", "Large"));
+        s1_courses.add(new Course(0, 0, 2022, 120, "CSE", "SP", "Large"));
+        s2_courses.add(new Course(0, 0, 2022, 120, "CSE", "SP", "Large"));
         StudentCourseComparator scc = new StudentCourseComparator(s1_courses, s2_courses);
         List<Course> overlap = scc.compare();
         assertEquals(1, overlap.size());
