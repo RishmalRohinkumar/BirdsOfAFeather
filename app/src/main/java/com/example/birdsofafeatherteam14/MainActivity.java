@@ -285,8 +285,9 @@ public class MainActivity extends AppCompatActivity {
             Session currSession = getCurrentSession();
             if (!currSession.getIsNamed()) {
                 newSessionNameDialog();
+            } else {
+                setNoCurrentSession();
             }
-            setNoCurrentSession();
             searchButton.setText("Start");
             clearStudentViews();
         }
@@ -313,12 +314,14 @@ public class MainActivity extends AppCompatActivity {
                     AppDatabase database = AppDatabase.singleton(getApplicationContext());
                     database.sessionDAO().update(newName, true, currSession.getId());
                 }
+                setNoCurrentSession();
             }
         });
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
+                setNoCurrentSession();
             }
         });
 
@@ -350,15 +353,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Session newSession = null;
+                AppDatabase database = AppDatabase.singleton(getApplicationContext());
                 chosenNameResult = sp.getSelectedItem().toString();
                 // Look at chosen name result and return the corresponding session
                 if (chosenNameResult.equals("New Session")) {
                     String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-                    newSession = new Session(db.sessionDAO().count(), timeStamp, false);
+                    newSession = new Session(database.sessionDAO().count(), timeStamp, false);
+                    database.sessionDAO().insert(newSession);
                 }
                 else {
                     // go through session list and find the session this name corresponds to
-                    List<Session> sessions = db.sessionDAO().getAll();
+                    List<Session> sessions = database.sessionDAO().getAll();
                     for (Session s : sessions) {
                         if (s.getName().equals(chosenNameResult)) {
                             newSession = s;
@@ -373,14 +378,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 setCurrentSession(newSession);
-                db.sessionDAO().insert(newSession);
                 updateStudentViews();
-            }
-        });
-        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
             }
         });
         builder.create().show();
