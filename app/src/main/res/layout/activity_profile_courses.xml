@@ -11,7 +11,7 @@
         android:id="@+id/title_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Birds of a Feather"
+        android:text="@string/birds_of_a_feather"
         android:textSize="32sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.1"
@@ -38,7 +38,7 @@
         android:id="@+id/prompt_user_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enter a Course:"
+        android:text="@string/enter_a_course"
         android:textSize="24dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -50,7 +50,7 @@
         android:id="@+id/course_subject_textview"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:text="Subject:"
+        android:text="@string/subject"
         android:textSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@+id/stored_courses_display"
@@ -61,7 +61,7 @@
         android:id="@+id/course_number_textview"
         android:layout_width="175dp"
         android:layout_height="wrap_content"
-        android:text="Course Number:"
+        android:text="@string/course_number"
         android:textSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@+id/stored_courses_display"
@@ -72,7 +72,7 @@
         android:id="@+id/course_quarter_textview"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:text="Quarter:"
+        android:text="@string/quarter"
         android:textSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@+id/stored_courses_display"
@@ -81,9 +81,9 @@
 
     <TextView
         android:id="@+id/course_year_textview"
-        android:layout_width="60dp"
+        android:layout_width="75dp"
         android:layout_height="wrap_content"
-        android:text="Year:"
+        android:text="@string/year"
         android:textSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@+id/stored_courses_display"
@@ -106,8 +106,8 @@
         android:layout_width="200dp"
         android:layout_height="48dp"
         android:inputType="textPersonName"
-        android:text=""
         android:nextFocusForward="@+id/enter_course_number"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="@+id/course_subject_textview"
         app:layout_constraintLeft_toRightOf="@+id/course_subject_textview"
         app:layout_constraintRight_toRightOf="@+id/stored_courses_display" />
@@ -132,13 +132,12 @@
 
     <Spinner
         android:id="@+id/enter_year"
-        android:layout_width="240dp"
+        android:layout_width="225dp"
         android:layout_height="48dp"
         android:inputType="number"
         android:nextFocusForward="@+id/enter_size"
         app:layout_constraintBottom_toBottomOf="@+id/course_year_textview"
-        app:layout_constraintLeft_toRightOf="@+id/course_year_textview"
-        app:layout_constraintRight_toRightOf="@+id/stored_courses_display" />
+        app:layout_constraintLeft_toRightOf="@+id/course_year_textview" />
 
     <Spinner
         android:id="@+id/enter_size"
@@ -168,7 +167,7 @@
         android:id="@+id/enter_button"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:text="Enter"
+        android:text="@string/enter"
         android:onClick="onEnterButtonClicked"
         app:layout_constraintVertical_bias="0.8"
         app:layout_constraintTop_toTopOf="parent"
@@ -179,7 +178,7 @@
         android:id="@+id/submit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Submit"
+        android:text="@string/submit"
         android:onClick="onSubmitButtonClicked"
         app:layout_constraintVertical_bias="0.95"
         app:layout_constraintTop_toTopOf="parent"
@@ -193,6 +192,7 @@
 <!--        android:text="Back"-->
 <!--        android:onClick="onBackButtonClicked"-->
 <!--        app:layout_constraintVertical_bias="0.95"-->
+<!--        app:layout_constraintVertical_bias="0.925"-->
 <!--        app:layout_constraintTop_toTopOf="parent"-->
 <!--        app:layout_constraintBottom_toBottomOf="parent"-->
 <!--        app:layout_constraintLeft_toLeftOf="@+id/stored_courses_display" />-->

@@ -30,32 +30,39 @@ public class ViewUserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_user);
 
-         Intent intent = getIntent();
-         int studentId = intent.getIntExtra("student_id",0);
+        // Get the student id that we need to display about
+        Intent intent = getIntent();
+        int studentId = intent.getIntExtra("student_id",0);
 
-         SharedPreferences sharedPreferences = getSharedPreferences("BOAF_PREFERENCES", MODE_PRIVATE);
-         int currStudentId = sharedPreferences.getInt("currentStudentId", 0);
-         // need to check sharedPreferences for "current_student_id"
-         // use this information to only display the overlap courses
+        SharedPreferences sharedPreferences = getSharedPreferences("BOAF_PREFERENCES", MODE_PRIVATE);
+        // get current session info
+        int sessionId = sharedPreferences.getInt("currentSession", -1);
 
-         db = AppDatabase.singleton(this);
-         student = db.studentDAO().get(studentId);
-         List<Course> courses = db.coursesDAO().getForStudent(studentId);
-         List<Course> currStudentCourses = db.coursesDAO().getForStudent(currStudentId);
-         String url = student.getPhoto();
+        // Get the relevant course and student information from the database
+        db = AppDatabase.singleton(this);
+        student = db.studentDAO().get(studentId, sessionId);
+        List<Course> courses = db.coursesDAO().getForStudent(studentId);
 
-         StudentCourseComparator comparator = new StudentCourseComparator(currStudentCourses, courses);
-         List<Course> overlapList = comparator.compare();
+        // get the current student id
+        int currStudentId = db.studentDAO().getCurrentUsers().get(0).studentId;
 
-         // Set up the recycler view to show our database contents.
-         coursesRecyclerView = findViewById(R.id.courses_view);
-         coursesLayoutManager = new LinearLayoutManager(this);
-         coursesRecyclerView.setLayoutManager(coursesLayoutManager);
+        List<Course> currStudentCourses = db.coursesDAO().getForStudent(currStudentId);
+        String url = student.getPhoto();
 
-         // this courses list should only be the overlap courses
-         coursesViewAdapter = new CoursesViewAdapter(overlapList);
-         coursesRecyclerView.setAdapter(coursesViewAdapter);
+        // Use the student course comparator so we only display the overlap courses
+        StudentCourseComparator comparator = new StudentCourseComparator(currStudentCourses, courses);
+        List<Course> overlapList = comparator.compare();
 
+        // Set up the recycler view to show our database contents.
+        coursesRecyclerView = findViewById(R.id.courses_view);
+        coursesLayoutManager = new LinearLayoutManager(this);
+        coursesRecyclerView.setLayoutManager(coursesLayoutManager);
+
+        // this courses list should only be the overlap courses
+        coursesViewAdapter = new CoursesViewAdapter(overlapList);
+        coursesRecyclerView.setAdapter(coursesViewAdapter);
+
+        // Load the image of the other student into the ImageView using Picasso
         TextView name_view = (TextView) findViewById(R.id.other_student_name);
         ImageView pic = findViewById(R.id.other_Student_picture);
         name_view.setText(student.getName());
@@ -65,6 +72,7 @@ public class ViewUserActivity extends AppCompatActivity {
 
     }
 
+    // Send us back to the main activity
     public void clickGoBackOnViewOtherStudentActivity(View view) {
         finish();
     }

@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="140dp"
         android:layout_marginTop="21dp"
-        android:text="TextView"
+        android:text="@string/textview"
         android:textStyle="bold"
         android:textSize="32dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
         android:layout_marginTop="22dp"
-        android:text="Shared Courses"
+        android:text="@string/shared_courses"
         android:textStyle="bold"
         android:textSize="26dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,7 +58,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="28dp"
         android:onClick="clickGoBackOnViewOtherStudentActivity"
-        android:text="GO BACK"
+        android:text="@string/go_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

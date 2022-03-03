@@ -8,11 +8,15 @@ import java.util.List;
 
 @Dao
 public interface StudentDAO {
-    @Query("SELECT * FROM students")
-    List<Student> getAll();
+    @Query("SELECT * FROM students WHERE session_id=:sessionId")
+    List<Student> getAll(int sessionId);
 
-    @Query("SELECT * FROM students WHERE student_id=:id")
-    Student get(int id);
+    @Query("SELECT * FROM students WHERE student_id=:id AND session_id=:sessionId")
+    Student get(int id, int sessionId);
+
+    // should technically be just one user, but making it a list because theoretically there could be multiple students in session -1
+    @Query("SELECT * FROM students WHERE session_id = -1")
+    List<Student> getCurrentUsers();
 
     @Insert
     void insert(Student student);

@@ -21,6 +21,7 @@ public class ProfileCoursesTests {
     @Rule
     public ActivityScenarioRule<ProfileCoursesActivity> scenarioRule = new ActivityScenarioRule<ProfileCoursesActivity>(ProfileCoursesActivity.class);
 
+    // Test to make sure that the display is correct upon initialization
     @Test
     public void testInitialDisplay() {
 //        ActivityScenario<ProfileCoursesActivity> scenario = scenarioRule.getScenario();
@@ -39,6 +40,7 @@ public class ProfileCoursesTests {
 //        });
     }
 
+    // Test to make sure that the input fails if you attempt to type in an invalid quarter
     @Test
     public void testUpdateDisplay() {
 //        ActivityScenario<ProfileCoursesActivity> scenario = scenarioRule.getScenario();
