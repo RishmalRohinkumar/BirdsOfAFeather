@@ -2,6 +2,7 @@ package com.example.birdsofafeatherteam14;
 
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import static org.junit.Assert.*;
@@ -29,13 +30,9 @@ public class ProfileCoursesTests {
         scenario.onActivity(activity -> {
             EditText subject_text = activity.findViewById(R.id.enter_subject);
             EditText course_number_text = activity.findViewById(R.id.enter_course_number);
-            EditText quarter_text = activity.findViewById(R.id.enter_quarter);
-            EditText year_text = activity.findViewById(R.id.enter_year);
 
             assertEquals("", subject_text.getText().toString());
             assertEquals("", course_number_text.getText().toString());
-            assertEquals("", quarter_text.getText().toString());
-            assertEquals("", year_text.getText().toString());
         });
     }
 
@@ -49,17 +46,13 @@ public class ProfileCoursesTests {
             TextView error = activity.findViewById(R.id.error_textview);
             EditText subject_text = activity.findViewById(R.id.enter_subject);
             EditText course_number_text = activity.findViewById(R.id.enter_course_number);
-            EditText quarter_text = activity.findViewById(R.id.enter_quarter);
-            EditText year_text = activity.findViewById(R.id.enter_year);
             Button enterButton = activity.findViewById(R.id.enter_button);
 
             subject_text.setText("CSE");
             course_number_text.setText("11");
-            quarter_text.setText("Summer");
-            year_text.setText("2022");
             enterButton.performClick();
 
-            assertEquals("That is an invalid Quarter.", error.getText());
+            assertEquals("Added quarter", error.getText());
         });
     }
 }

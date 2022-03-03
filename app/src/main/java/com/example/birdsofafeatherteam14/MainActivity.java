@@ -191,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
         final int QUARTER_INDEX = 1;
         final int SUBJECT_INDEX = 2;
         final int NUMBER_INDEX = 3;
+        final int SIZE_INDEX = 4;
 
         try {
             String[] splitByNewline = str.split("\n");
@@ -202,16 +203,18 @@ public class MainActivity extends AppCompatActivity {
             int currCourseId = db.coursesDAO().count() + 1;
             for (int i = 2; i < splitByNewline.length; i++) {
                 String[] courseInfo = splitByNewline[i].split(",");
+
                 int courseYear = Integer.parseInt(courseInfo[YEAR_INDEX]);
                 String courseQuarter = courseInfo[QUARTER_INDEX];
                 String courseSubject = courseInfo[SUBJECT_INDEX];
                 int courseNum = Integer.parseInt(courseInfo[NUMBER_INDEX]);
+                String courseSize = courseInfo[SIZE_INDEX];
                 // POST INCREMENT SO IT'S ONE GREATER FOR THE NEXT COURSE
                 // DOING IT THIS WAY BECAUSE WE ARE NOT ADDING COURSES TO THE DB
                 // IN THIS LOOP, WE DO IT AT THE END SO THE .count FUNCTION WILL
                 // KEEP RETURNING THE SAME VALUE
                 Course course = new Course(currCourseId++, student.studentId,
-                        courseYear, courseNum, courseSubject, courseQuarter);
+                        courseYear, courseNum, courseSubject, courseQuarter, courseSize);
                 courses.add(course);
             }
 
