@@ -33,25 +33,4 @@ public class MainActivityTests{
             assertEquals("Start", searchButton.getText().toString());
         });
     }
-
-    // Make sure clicking the button makes it go back and forth between searching and not searching
-    @Test
-    public void testToggleSearching() {
-        ActivityScenario<MainActivity> scenario = scenarioRule.getScenario();
-        scenario.moveToState(Lifecycle.State.CREATED);
-
-        scenario.onActivity(activity -> {
-            Button searchButton = activity.findViewById(R.id.searchButton);
-
-            searchButton.performClick();
-            assertEquals("Stop", searchButton.getText().toString());
-
-            searchButton.performClick();
-            assertEquals("Start", searchButton.getText().toString());
-
-            searchButton.performClick();
-            assertEquals("Stop", searchButton.getText().toString());
-        });
-    }
-
 }

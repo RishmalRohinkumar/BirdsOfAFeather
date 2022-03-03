@@ -87,7 +87,7 @@ public class ProfileCoursesActivity extends AppCompatActivity {
 
         // Set up Database and add the student to it
         AppDatabase db = AppDatabase.singleton(this);
-        Student student = new Student(db.studentDAO().count()+1, name, imageUrl);
+        Student student = new Student(db.studentDAO().count()+1, MainActivity.CURRENT_USER_SESSION_ID, name, imageUrl);
         db.studentDAO().insert(student);
 
         // track the id of the courses since we aren't adding them to the database as they are entered,
@@ -100,16 +100,12 @@ public class ProfileCoursesActivity extends AppCompatActivity {
             course.studentId = student.studentId;
             db.coursesDAO().insert(course);
         }
-        // Return back to the main activity, with an intent for the id of the student running the
-        // app so the main activity can query the database with that id
+        // Return back to the main activity
         Intent intent = new Intent(this, MainActivity.class);
         // Tell android that the Main Activity is already on the stack, so lets go to the main activity
         // and get rid of everything that is on top of it
         // Once we return to the main activity it will be on top of the stack
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        // Tell the Main Activity we already initialized a student, and give it the ID so it can find
-        // the student in the database
-        intent.putExtra("student_id", student.studentId);
         startActivity(intent);
     }
 }

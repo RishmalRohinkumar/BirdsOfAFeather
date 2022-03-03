@@ -46,11 +46,11 @@ public class testAddStudentAndCoursesToDb {
     // in the database is correct.
     @Test
     public void addStudentsAndCoursesAndCheckSize() throws Exception {
-        Student student0 = new Student(db.studentDAO().count()+1, "Tyler", "");
+        Student student0 = new Student(db.studentDAO().count()+1,0, "Tyler", "");
         db.studentDAO().insert(student0);
         Course course0 = new Course(db.coursesDAO().count() + 1, student0.studentId, 2022, 120, "CSE", "SP");
         db.coursesDAO().insert(course0);
-        Student student1 = new Student(db.studentDAO().count()+1, "Tyler1", "");
+        Student student1 = new Student(db.studentDAO().count()+1,0, "Tyler1", "");
         db.studentDAO().insert(student1);
         Course course1 = new Course(db.coursesDAO().count() + 1, student1.studentId, 2022, 139, "CSE", "SP");
         db.coursesDAO().insert(course1);
@@ -63,13 +63,13 @@ public class testAddStudentAndCoursesToDb {
     // the student with two courses has their courses correctly stored in the database.
     @Test
     public void testGetCoursesByStudent() throws Exception {
-        Student student0 = new Student(db.studentDAO().count()+1, "Tyler", "");
+        Student student0 = new Student(db.studentDAO().count()+1,0, "Tyler", "");
         db.studentDAO().insert(student0);
         Course course0 = new Course(db.coursesDAO().count() + 1, student0.studentId, 2022, 120, "CSE", "SP");
         db.coursesDAO().insert(course0);
         Course course1 = new Course(db.coursesDAO().count() + 1, student0.studentId, 2023, 125, "PHYS", "FA");
         db.coursesDAO().insert(course1);
-        Student student1 = new Student(db.studentDAO().count()+1, "Tyler1", "");
+        Student student1 = new Student(db.studentDAO().count()+1,0, "Tyler1", "");
         db.studentDAO().insert(student1);
         Course course2 = new Course(db.coursesDAO().count() + 1, student1.studentId, 2022, 139, "CSE", "SP");
         db.coursesDAO().insert(course2);

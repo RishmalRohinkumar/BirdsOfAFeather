@@ -34,16 +34,18 @@ public class ViewUserActivity extends AppCompatActivity {
         Intent intent = getIntent();
         int studentId = intent.getIntExtra("student_id",0);
 
-        // Get the id of the current student so that we can compare their courses
         SharedPreferences sharedPreferences = getSharedPreferences("BOAF_PREFERENCES", MODE_PRIVATE);
-        int currStudentId = sharedPreferences.getInt("currentStudentId", 0);
-        // need to check sharedPreferences for "current_student_id"
-        // use this information to only display the overlap courses
+        // get current session info
+        int sessionId = sharedPreferences.getInt("currentSession", -1);
 
         // Get the relevant course and student information from the database
         db = AppDatabase.singleton(this);
-        student = db.studentDAO().get(studentId);
+        student = db.studentDAO().get(studentId, sessionId);
         List<Course> courses = db.coursesDAO().getForStudent(studentId);
+
+        // get the current student id
+        int currStudentId = db.studentDAO().getCurrentUsers().get(0).studentId;
+
         List<Course> currStudentCourses = db.coursesDAO().getForStudent(currStudentId);
         String url = student.getPhoto();
 
