@@ -24,43 +24,35 @@ public class ProfileCoursesTests {
     // Test to make sure that the display is correct upon initialization
     @Test
     public void testInitialDisplay() {
-//        ActivityScenario<ProfileCoursesActivity> scenario = scenarioRule.getScenario();
-//        scenario.moveToState(Lifecycle.State.CREATED);
-//
-//        scenario.onActivity(activity -> {
-//            EditText subject_text = activity.findViewById(R.id.enter_subject);
-//            EditText course_number_text = activity.findViewById(R.id.enter_course_number);
-//            EditText quarter_text = activity.findViewById(R.id.enter_quarter);
-//            EditText year_text = activity.findViewById(R.id.enter_year);
-//
-//            assertEquals("", subject_text.getText().toString());
-//            assertEquals("", course_number_text.getText().toString());
-//            assertEquals("", quarter_text.getText().toString());
-//            assertEquals("", year_text.getText().toString());
-//        });
+        ActivityScenario<ProfileCoursesActivity> scenario = scenarioRule.getScenario();
+        scenario.moveToState(Lifecycle.State.CREATED);
+
+        scenario.onActivity(activity -> {
+            EditText subject_text = activity.findViewById(R.id.enter_subject);
+            EditText course_number_text = activity.findViewById(R.id.enter_course_number);
+
+            assertEquals("", subject_text.getText().toString());
+            assertEquals("", course_number_text.getText().toString());
+        });
     }
 
     // Test to make sure that the input fails if you attempt to type in an invalid quarter
     @Test
     public void testUpdateDisplay() {
-//        ActivityScenario<ProfileCoursesActivity> scenario = scenarioRule.getScenario();
-//        scenario.moveToState(Lifecycle.State.CREATED);
-//
-//        scenario.onActivity(activity -> {
-//            TextView error = activity.findViewById(R.id.error_textview);
-//            EditText subject_text = activity.findViewById(R.id.enter_subject);
-//            EditText course_number_text = activity.findViewById(R.id.enter_course_number);
-//            EditText quarter_text = activity.findViewById(R.id.enter_quarter);
-//            EditText year_text = activity.findViewById(R.id.enter_year);
-//            Button enterButton = activity.findViewById(R.id.enter_button);
-//
-//            subject_text.setText("CSE");
-//            course_number_text.setText("11");
-//            quarter_text.setText("Summer");
-//            year_text.setText("2022");
-//            enterButton.performClick();
-//
-//            assertEquals("That is an invalid Quarter.", error.getText());
-//        });
+        ActivityScenario<ProfileCoursesActivity> scenario = scenarioRule.getScenario();
+        scenario.moveToState(Lifecycle.State.CREATED);
+
+        scenario.onActivity(activity -> {
+            TextView error = activity.findViewById(R.id.error_textview);
+            EditText subject_text = activity.findViewById(R.id.enter_subject);
+            EditText course_number_text = activity.findViewById(R.id.enter_course_number);
+            Button enterButton = activity.findViewById(R.id.enter_button);
+
+            subject_text.setText("CSE");
+            course_number_text.setText("11");
+            enterButton.performClick();
+
+            assertEquals("Added quarter", error.getText());
+        });
     }
 }
