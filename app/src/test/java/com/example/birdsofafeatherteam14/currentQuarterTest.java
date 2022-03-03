@@ -10,7 +10,7 @@ public class currentQuarterTest {
     @Test
     public void testUpdateCurrentQtr() {
         TrackCurrentQuarter test = new TrackCurrentQuarter();
-        assertEquals(test.getQtr(),"SP22");
+        assertEquals(test.getQtr(),"WI22");
     }
 
 
