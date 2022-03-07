@@ -48,12 +48,12 @@ public class SessionsTests{
     public void testGetCurrentUser() throws Exception {
         Session currUserSession = new Session(-1, "", true);
         db.sessionDAO().insert(currUserSession);
-        Student currUser = new Student(0, -1, "Tyler", "");
+        Student currUser = new Student(0, -1, "Tyler", "", "Z");
         db.studentDAO().insert(currUser);
 
         Session otherSession = new Session(0, "CSE 105", true);
         db.sessionDAO().insert(otherSession);
-        Student otherStudent = new Student(1, 0, "Anthony", "");
+        Student otherStudent = new Student(1, 0, "Anthony", "", "Y");
         db.studentDAO().insert(otherStudent);
 
         List<Student> currUsers = db.studentDAO().getCurrentUsers();
@@ -66,11 +66,11 @@ public class SessionsTests{
     public void testSeparateSessions() throws Exception {
         Session session0 = new Session(0, "CSE 105", true);
         db.sessionDAO().insert(session0);
-        Student student0 = new Student(0, 0, "Anthony", "");
+        Student student0 = new Student(0, 0, "Anthony", "", "A");
         db.studentDAO().insert(student0);
-        Student student1 = new Student(1, 0, "Jerry", "");
+        Student student1 = new Student(1, 0, "Jerry", "", "B");
         db.studentDAO().insert(student1);
-        Student student2 = new Student(2, 0, "Ben", "");
+        Student student2 = new Student(2, 0, "Ben", "", "C");
         db.studentDAO().insert(student2);
 
         Session session1 = new Session(1, "CSE 110", true);
@@ -78,7 +78,7 @@ public class SessionsTests{
 
         Session session2 = new Session(2, "CSE 134B", true);
         db.sessionDAO().insert(session2);
-        Student student3 = new Student(3, 2, "CSE 99", "");
+        Student student3 = new Student(3, 2, "CSE 99", "", "D");
         db.studentDAO().insert(student3);
 
 
