@@ -18,6 +18,7 @@ import com.example.birdsofafeatherteam14.model.db.Student;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ProfileCoursesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private List<Course> coursesToAdd;
@@ -73,7 +74,7 @@ public class ProfileCoursesActivity extends AppCompatActivity implements Adapter
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-        String[] quarters = getResources().getStringArray(R.array.quarters_array);
+        String[] quarters = getResources().getStringArray(R.array.quarters_key);
         String[] years = getResources().getStringArray(R.array.years_array);
         String[] sizes = getResources().getStringArray(R.array.sizes_key);
 
@@ -109,9 +110,9 @@ public class ProfileCoursesActivity extends AppCompatActivity implements Adapter
             error_text.setText("That is an invalid Course Number.");
         }
 
-        if (quarter.equals("Fall") || quarter.equals("Winter") || quarter.equals("Spring")||
-            quarter.equals("Summer Session I") || quarter.equals("Summer Session II") ||
-            quarter.equals("Special Summer Session")) {
+        if (quarter.equals("FA") || quarter.equals("WI") || quarter.equals("SP")||
+            quarter.equals("SS1") || quarter.equals("SS2") ||
+            quarter.equals("SSS")) {
 
             // set course/student id later once we are adding to the database
             Course new_course = new Course(0, 0, year, course_number, subject, quarter, size);
@@ -138,7 +139,8 @@ public class ProfileCoursesActivity extends AppCompatActivity implements Adapter
 
         // Set up Database and add the student to it
         AppDatabase db = AppDatabase.singleton(this);
-        Student student = new Student(db.studentDAO().count()+1, MainActivity.CURRENT_USER_SESSION_ID, name, imageUrl);
+        String uniqueID = UUID.randomUUID().toString();
+        Student student = new Student(db.studentDAO().count()+1, MainActivity.CURRENT_USER_SESSION_ID, name, imageUrl, uniqueID);
         db.studentDAO().insert(student);
 
         // track the id of the courses since we aren't adding them to the database as they are entered,

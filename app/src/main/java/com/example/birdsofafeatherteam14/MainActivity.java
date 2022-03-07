@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         // Need to close the database so all of the tests running one after each other
         // don't fuck up the database
         if (db != null) {
-            db.close();
+            //db.close();
         }
     }
 
@@ -195,13 +195,14 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             String[] splitByNewline = str.split("\n");
-            String name = splitByNewline[0].split(",")[0];
-            String url = splitByNewline[1].split(",")[0];
-            Student student = new Student(db.studentDAO().count()+1, currSession.getId(), name, url);
+            String uuid = splitByNewline[0].split(",")[0];
+            String name = splitByNewline[1].split(",")[0];
+            String url = splitByNewline[2].split(",")[0];
+            Student student = new Student(db.studentDAO().count()+1, currSession.getId(), name, url, uuid);
 
             List<Course> courses = new ArrayList<Course>();
             int currCourseId = db.coursesDAO().count() + 1;
-            for (int i = 2; i < splitByNewline.length; i++) {
+            for (int i = 3; i < splitByNewline.length; i++) {
                 String[] courseInfo = splitByNewline[i].split(",");
 
                 int courseYear = Integer.parseInt(courseInfo[YEAR_INDEX]);
