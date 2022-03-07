@@ -35,6 +35,15 @@
         <item>Special Summer Session</item>
     </string-array>
 
+    <string-array name="quarters_key">
+        <item>FA</item>
+        <item>WI</item>
+        <item>SP</item>
+        <item>SS1</item>
+        <item>SS2</item>
+        <item>SSS</item>
+    </string-array>
+
     <string-array name="years_array">
         <item>2022</item>
         <item>2021</item>

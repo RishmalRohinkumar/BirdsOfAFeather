@@ -18,6 +18,9 @@ public interface StudentDAO {
     @Query("SELECT * FROM students WHERE session_id = -1")
     List<Student> getCurrentUsers();
 
+    @Query("SELECT * FROM students WHERE uuid=:uuid")
+    List<Student> getByUuid(String uuid);
+
     @Insert
     void insert(Student student);
 

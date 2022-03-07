@@ -7,16 +7,20 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "students")
 public class Student {
 
-    public Student(int studentId, int sessionId, String name, String photo) {
+    public Student(int studentId, int sessionId, String name, String photo, String uuid) {
         this.studentId = studentId;
         this.sessionId = sessionId;
         this.name = name;
         this.photo = photo;
+        this.uuid = uuid;
     }
 
     @PrimaryKey
     @ColumnInfo(name = "student_id")
     public int studentId;
+
+    @ColumnInfo(name = "uuid")
+    public String uuid;
 
     @ColumnInfo(name = "session_id")
     public int sessionId;
@@ -30,6 +34,8 @@ public class Student {
     public String getName() {return name;}
 
     public String getPhoto() {return photo;}
+
+    public String getUuid() {return uuid;}
 
     public int getId() {return this.studentId;}
 
