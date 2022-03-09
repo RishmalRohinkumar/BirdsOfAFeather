@@ -2,7 +2,10 @@ package com.example.birdsofafeatherteam14;
 
 import static com.example.birdsofafeatherteam14.Utilities.showAlert;
 
+import static java.util.Collections.*;
+
 import android.app.AlertDialog;
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -18,6 +21,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.text.InputType;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -90,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
 
     // Updates the recycler views with the other students that have overlapping classes
     // should only be called when the start button is clicked
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void updateStudentViews() {
         Log.i(TAG, "updateStudentViews() called");
 
@@ -125,20 +128,25 @@ public class MainActivity extends AppCompatActivity {
             // students that the current student has common classes with. The commonClasses<Integer>
             // list is so that the recycler view knows how many common classes the current user student
             // and the student in question have, so it can display that information to the screen.
-            List<Student> commonStudents = new ArrayList<Student>();
-            List<Integer> commonClasses = new ArrayList<Integer>();
+
+            List<Pair<Student, Integer>> commonStudents = new ArrayList<>();
 
             for (int i = 0; i < classes.size(); i++){
                 if (classes.get(i) != 0){
-                    commonClasses.add(classes.get(i));
-                    commonStudents.add(students.get(i));
+                    commonStudents.add(new Pair<>(students.get(i), classes.get(i)));
                 }
             }
 
             // Sort lists in order of class commonality
-            Collections.sort(commonStudents, Comparator.comparing(item -> commonClasses.indexOf(item)));
-            Collections.reverse(commonStudents);
-            Collections.reverse(commonClasses);
+            Collections.sort(commonStudents, Comparator.comparing(p -> -p.second));
+
+            List<Student> finalStudent = new ArrayList<>();
+            List<Integer> finalCourses = new ArrayList<>();
+
+            for (Pair p : commonStudents) {
+                finalStudent.add((Student) p.first);
+                finalCourses.add((Integer) p.second);
+            }
 
             Log.i(TAG, "Common courses found: starting to set up RecyclerViews");
             studentRecyclerView = findViewById(R.id.students_view);
@@ -146,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
             studentLayoutManager = new LinearLayoutManager(this);
             studentRecyclerView.setLayoutManager(studentLayoutManager);
 
-            studentViewAdapter = new StudentViewAdapter(commonStudents, commonClasses);
+            studentViewAdapter = new StudentViewAdapter(finalStudent, finalCourses);
             studentRecyclerView.setAdapter(studentViewAdapter);
         } else {
             Log.i(TAG, "Database null in updateStudentViews()");
