@@ -5,9 +5,11 @@ import static com.example.birdsofafeatherteam14.Utilities.showAlert;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,6 +37,8 @@ import com.google.android.gms.nearby.messages.MessageListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -86,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Updates the recycler views with the other students that have overlapping classes
     // should only be called when the start button is clicked
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void updateStudentViews() {
         Log.i(TAG, "updateStudentViews() called");
 
@@ -129,6 +134,11 @@ public class MainActivity extends AppCompatActivity {
                     commonStudents.add(students.get(i));
                 }
             }
+
+            // Sort lists in order of class commonality
+            Collections.sort(commonStudents, Comparator.comparing(item -> commonClasses.indexOf(item)));
+            Collections.reverse(commonStudents);
+            Collections.reverse(commonClasses);
 
             Log.i(TAG, "Common courses found: starting to set up RecyclerViews");
             studentRecyclerView = findViewById(R.id.students_view);
