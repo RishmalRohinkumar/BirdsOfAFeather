@@ -11,8 +11,10 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 public class StudentToCSVTranslatorTests {
+    // Test student data from canvas
     @Test
-    public void testPiazzaCSV() {
-
+    public void testCanvasCSV() {
+        // https://canvas.ucsd.edu/courses/32700/assignments/451849
+        // make student with same info as the
     }
 }
