@@ -195,6 +195,8 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             String[] splitByNewline = str.split("\n");
+            String[] lastLine = splitByNewline[splitByNewline.length - 1].split(",");
+
             String uuid = splitByNewline[0].split(",")[0];
             String name = splitByNewline[1].split(",")[0];
             String url = splitByNewline[2].split(",")[0];
@@ -202,7 +204,23 @@ public class MainActivity extends AppCompatActivity {
 
             List<Course> courses = new ArrayList<Course>();
             int currCourseId = db.coursesDAO().count() + 1;
-            for (int i = 3; i < splitByNewline.length; i++) {
+            boolean wave = false;
+
+            // the last line is specifying a wave
+            if (lastLine[1].equals("wave")) {
+                // This is a msg specifying a new person that is waving
+                wave = true;
+            }
+
+            int lastCourseLine = splitByNewline.length;
+            if (wave) {
+                // In this case, the last line doesn't hold a course, so we don't want to iterate onto
+                // it while searching for courses
+                lastCourseLine--;
+            }
+
+
+            for (int i = 3; i < lastCourseLine; i++) {
                 String[] courseInfo = splitByNewline[i].split(",");
 
                 int courseYear = Integer.parseInt(courseInfo[YEAR_INDEX]);
@@ -226,6 +244,12 @@ public class MainActivity extends AppCompatActivity {
             for (Course c : courses) {
                 db.coursesDAO().insert(c);
                 Log.i(TAG, "Successfully Added a course from MockBluetooth to the database");
+            }
+
+            if (wave) {
+                String recipientUUID = lastLine[0];
+                // last line also includes a wave, so lets handle that
+                showAlert(this, "Wave to " + recipientUUID);
             }
 
         } catch (IndexOutOfBoundsException | NumberFormatException e) {
