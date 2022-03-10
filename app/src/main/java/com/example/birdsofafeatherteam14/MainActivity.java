@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
     private String chosenNameResult; // for the dialog where the user selects a session
     private String newSessionNameResult; // for the dialog where the user selects a name for the new session
 
+    private Message currUserMessage; // stores the information about the current user that should be broadcasted
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "In onCreate() of MainActivity");
@@ -83,6 +85,12 @@ public class MainActivity extends AppCompatActivity {
             // user will already be stored in the database
             Intent intent = new Intent(this, ProfileNameActivity.class);
             startActivity(intent);
+        } else {
+            // set up message that will be broadcast with the current users information
+            Student currStudent = db.studentDAO().getCurrentUsers().get(0);
+            List<Course> currStudentCourses = db.coursesDAO().getForStudent(currStudent.getId());
+            StudentToCSVTranslator translator = new StudentToCSVTranslator(currStudent, currStudentCourses);
+            this.currUserMessage = new Message(translator.getCSV().getBytes());
         }
     }
 
@@ -155,6 +163,10 @@ public class MainActivity extends AppCompatActivity {
         // don't fuck up the database
         if (db != null) {
             //db.close();
+        }
+        if (searching) {
+            Log.i(TAG, "Unpublishing information about the current user");
+            Nearby.getMessagesClient(this).unpublish(this.currUserMessage);
         }
     }
 
@@ -320,6 +332,8 @@ public class MainActivity extends AppCompatActivity {
 
             Log.i(TAG, "Subscribing realListener to Nearby Messages");
             Nearby.getMessagesClient(this).subscribe(realListener);
+            Log.i(TAG, "Starting to publish information about the current user");
+            Nearby.getMessagesClient(this).publish(this.currUserMessage);
 
         } else {
             // Give the session a name if it is unnamed
@@ -334,6 +348,8 @@ public class MainActivity extends AppCompatActivity {
 
             Log.i(TAG, "Unsubscribing realListener from Nearby Messages");
             Nearby.getMessagesClient(this).unsubscribe(realListener);
+            Log.i(TAG, "Unpublishing information about the current user");
+            Nearby.getMessagesClient(this).unpublish(this.currUserMessage);
         }
     }
 
@@ -503,5 +519,7 @@ public class MainActivity extends AppCompatActivity {
                 // Does nothing atm
             }
         };
+
+
     }
 }
