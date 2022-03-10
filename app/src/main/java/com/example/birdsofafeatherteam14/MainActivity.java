@@ -68,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
     private String chosenNameResult; // for the dialog where the user selects a session
     private String newSessionNameResult; // for the dialog where the user selects a name for the new session
 
+    private String currentFilter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "In onCreate() of MainActivity");
@@ -81,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
         setUpRealBluetooth();
 
         setNoCurrentSession();
+
+        currentFilter = "None";
 
         setFilterSpinner();
 
@@ -109,28 +113,21 @@ public class MainActivity extends AppCompatActivity {
         filter_spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-                        Object item = adapterView.getItemAtPosition(pos);
-                        filter(getResources().getStringArray(R.array.filters_key)[pos]);
+                        updateStudentViews(getResources().getStringArray(R.array.filters_key)[pos]);
                     }
                     public void onNothingSelected(AdapterView<?> adapterView){}
                 }
         );
     }
 
-    private void filter(String filter){
-
-    }
-
-    // Updates the recycler views with the other students that have overlapping classes
-    // should only be called when the start button is clicked
-    private void updateStudentViews() {
-        Log.i(TAG, "updateStudentViews() called");
+    private List<Pair<Student, Integer>> prepareStudentList(){
+        List<Pair<Student, Integer>> commonStudents = new ArrayList<>();
 
         if (db != null) {
-            Log.i(TAG, "Database not null in updateStudentViews()");
+            Log.i(TAG, "Database not null in prepareStudentList");
 
             Session currSession = getCurrentSession();
-            if (currSession == null) {return;}
+            if (currSession == null) {return commonStudents;}
 
             List<? extends Student> students = db.studentDAO().getAll(currSession.sessionId);
 
@@ -158,36 +155,80 @@ public class MainActivity extends AppCompatActivity {
             // list is so that the recycler view knows how many common classes the current user student
             // and the student in question have, so it can display that information to the screen.
 
-            List<Pair<Student, Integer>> commonStudents = new ArrayList<>();
-
             for (int i = 0; i < classes.size(); i++){
                 if (classes.get(i) != 0){
                     commonStudents.add(new Pair<>(students.get(i), classes.get(i)));
                 }
             }
 
-            // Sort lists in order of class commonality
-            Collections.sort(commonStudents, Comparator.comparing(p -> -p.second));
+            return commonStudents;
 
-            List<Student> finalStudent = new ArrayList<>();
-            List<Integer> finalCourses = new ArrayList<>();
-
-            for (Pair p : commonStudents) {
-                finalStudent.add((Student) p.first);
-                finalCourses.add((Integer) p.second);
-            }
-
-            Log.i(TAG, "Common courses found: starting to set up RecyclerViews");
-            studentRecyclerView = findViewById(R.id.students_view);
-
-            studentLayoutManager = new LinearLayoutManager(this);
-            studentRecyclerView.setLayoutManager(studentLayoutManager);
-
-            studentViewAdapter = new StudentViewAdapter(finalStudent, finalCourses);
-            studentRecyclerView.setAdapter(studentViewAdapter);
         } else {
             Log.i(TAG, "Database null in updateStudentViews()");
         }
+        return commonStudents;
+    }
+
+    private List<Pair<Student, Integer>> noneStudentFilter(List<Pair<Student, Integer>> currList){
+        // Sort lists in order of class commonality
+        Collections.sort(currList, Comparator.comparing(p -> -p.second));
+        return currList;
+    }
+
+    private List<Pair<Student, Integer>> recentStudentFilter(List<Pair<Student, Integer>> currList){
+
+        return currList;
+    }
+
+    private List<Pair<Student, Integer>> smallStudentFilter(List<Pair<Student, Integer>> currList){
+
+        return currList;
+    }
+
+    private List<Pair<Student, Integer>> quarterStudentFilter(List<Pair<Student, Integer>> currList){
+
+        return currList;
+    }
+
+
+    // Updates the recycler views with the other students that have overlapping classes
+    // should only be called when the start button is clicked
+    private void updateStudentViews(String filter) {
+        List<Pair<Student, Integer>> commonStudents = prepareStudentList();
+
+        switch (filter){
+            case "None":
+                commonStudents = noneStudentFilter(commonStudents);
+                break;
+            case "Recent":
+                commonStudents = recentStudentFilter(commonStudents);
+                break;
+            case "Small":
+                commonStudents = smallStudentFilter(commonStudents);
+                break;
+            case "Quarter":
+                commonStudents = quarterStudentFilter(commonStudents);
+                break;
+        }
+
+        currentFilter = filter;
+
+        List<Student> finalStudent = new ArrayList<>();
+        List<Integer> finalCourses = new ArrayList<>();
+
+        for (Pair p : commonStudents) {
+            finalStudent.add((Student) p.first);
+            finalCourses.add((Integer) p.second);
+        }
+
+        Log.i(TAG, "Common courses found: starting to set up RecyclerViews");
+        studentRecyclerView = findViewById(R.id.students_view);
+
+        studentLayoutManager = new LinearLayoutManager(this);
+        studentRecyclerView.setLayoutManager(studentLayoutManager);
+
+        studentViewAdapter = new StudentViewAdapter(finalStudent, finalCourses);
+        studentRecyclerView.setAdapter(studentViewAdapter);
     }
 
 
@@ -324,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
                 newSession = new Session(db.sessionDAO().count(), timeStamp, false);
                 setCurrentSession(newSession);
                 db.sessionDAO().insert(newSession);
-                updateStudentViews();
+                updateStudentViews(currentFilter);
             } else {
                 // Ask the user to pick a session from the list of sessions, or a new session
                 pickSessionFromList();
@@ -429,7 +470,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 setCurrentSession(newSession);
-                updateStudentViews();
+                updateStudentViews(currentFilter);
             }
         });
         builder.create().show();
@@ -495,7 +536,7 @@ public class MainActivity extends AppCompatActivity {
                         String student_data = new String(message.getContent());
                         addStudentCSVStringToDb(student_data);
                         // whenever receive a bluetooth message, update the student views
-                        updateStudentViews();
+                        updateStudentViews(currentFilter);
                     } else {
                         Log.i(TAG, "Not actively searching, doing nothing with this message");
                     }
