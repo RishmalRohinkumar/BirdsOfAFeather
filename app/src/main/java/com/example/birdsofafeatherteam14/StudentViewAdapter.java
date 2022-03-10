@@ -51,12 +51,14 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
             implements View.OnClickListener {
         private final TextView studentNameView;
         private final ImageView studentImageView;
+        private ImageView studentWaveImage;
         private Student student;
 
         ViewHolder(View itemView) {
             super(itemView);
             this.studentNameView = itemView.findViewById(R.id.student_row_name);
             this.studentImageView = itemView.findViewById(R.id.row_view_picture);
+            this.studentWaveImage = itemView.findViewById(R.id.row_wave_img);
             itemView.setOnClickListener(this);
         }
 
@@ -64,6 +66,11 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
             this.student = student;
             this.studentNameView.setText(student.getName() + " (" + sharedCourses.toString() + ")");
             Picasso.get().load(student.getPhoto()).into(this.studentImageView);
+            if (this.student.wave) {
+                this.studentWaveImage.setVisibility(View.VISIBLE);
+            } else {
+                this.studentWaveImage.setVisibility(View.INVISIBLE);
+            }
         }
 
         @Override

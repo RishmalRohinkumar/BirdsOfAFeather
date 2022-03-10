@@ -13,6 +13,7 @@ public class Student {
         this.name = name;
         this.photo = photo;
         this.uuid = uuid;
+        this.wave = false;
     }
 
     @PrimaryKey
@@ -30,6 +31,9 @@ public class Student {
 
     @ColumnInfo(name = "photo")
     public String photo;
+
+    @ColumnInfo(name = "wave")
+    public boolean wave;
 
     public String getName() {return name;}
 

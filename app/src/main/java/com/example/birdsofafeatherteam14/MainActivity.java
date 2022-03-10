@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
@@ -249,7 +250,14 @@ public class MainActivity extends AppCompatActivity {
             if (wave) {
                 String recipientUUID = lastLine[0];
                 // last line also includes a wave, so lets handle that
-                showAlert(this, "Wave to " + recipientUUID);
+                Student currentUser = db.studentDAO().getCurrentUsers().get(0);
+                if (currentUser.uuid.equals(recipientUUID)) {
+                    String message = name + " has waved to you!";
+                    Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+
+                    int otherId = student.getId();
+                    db.studentDAO().update(true, otherId);
+                }
             }
 
         } catch (IndexOutOfBoundsException | NumberFormatException e) {

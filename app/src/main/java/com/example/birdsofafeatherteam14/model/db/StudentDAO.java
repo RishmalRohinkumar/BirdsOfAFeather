@@ -26,4 +26,7 @@ public interface StudentDAO {
 
     @Query("SELECT COUNT(*) from students")
     int count();
+
+    @Query("UPDATE students SET wave=:waveStatus WHERE student_id=:id")
+    void update(boolean waveStatus, int id);
 }
