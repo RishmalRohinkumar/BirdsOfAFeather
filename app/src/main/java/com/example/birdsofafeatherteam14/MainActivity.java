@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
             String uuid = splitByNewline[0].split(",")[0];
             String name = splitByNewline[1].split(",")[0];
             String url = splitByNewline[2].split(",")[0];
-            Student student = new Student(db.studentDAO().count()+1, currSession.getId(), name, url, uuid);
+            Student student = new Student(db.studentDAO().count()+1, currSession.getId(), name, url, uuid, false);
 
             List<Course> courses = new ArrayList<Course>();
             int currCourseId = db.coursesDAO().count() + 1;

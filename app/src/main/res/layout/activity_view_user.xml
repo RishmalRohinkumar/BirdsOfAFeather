@@ -65,6 +65,7 @@
     <CheckBox
         android:id="@+id/starViewUser"
         style="?android:attr/starStyle"
+        android:onClick="onFavViewClick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="294dp"

@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Student;
 import com.squareup.picasso.Picasso;
 
@@ -52,12 +55,41 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
         private final TextView studentNameView;
         private final ImageView studentImageView;
         private Student student;
+        private AppDatabase db;
 
         ViewHolder(View itemView) {
             super(itemView);
             this.studentNameView = itemView.findViewById(R.id.student_row_name);
             this.studentImageView = itemView.findViewById(R.id.row_view_picture);
             itemView.setOnClickListener(this);
+
+            CheckBox fav = (CheckBox) itemView.findViewById(R.id.starStudentList);
+
+            if(student.getFavourite()) {
+                fav.setChecked(true);
+            } else {
+                fav.setChecked(false);
+            }
+        }
+
+        public void onFavRowClick(View itemView) {
+            CheckBox favourite = (CheckBox) itemView.findViewById(R.id.starStudentList);
+            boolean fav_state = favourite.isChecked();
+            Context context = itemView.getContext();
+            db = AppDatabase.singleton(context);
+            int studentId = student.getId();
+
+            if(fav_state == true){
+                db.studentDAO().update(true, studentId);
+                favourite.setChecked(true);
+                Toast.makeText(context,
+                        "Saved to Favorites", Toast.LENGTH_LONG).show();
+            } else {
+                db.studentDAO().update(false, studentId);
+                favourite.setChecked(false);
+                Toast.makeText(context,
+                        "Removed from Favorites", Toast.LENGTH_LONG).show();
+            }
         }
 
         public void setStudent(Student student, Integer sharedCourses) {

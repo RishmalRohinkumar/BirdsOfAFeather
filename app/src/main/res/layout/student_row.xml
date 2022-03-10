@@ -39,6 +39,7 @@
     <CheckBox
         android:id="@+id/starStudentList"
         style="?android:attr/starStyle"
+        android:onClick="onFavRowClick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="358dp"

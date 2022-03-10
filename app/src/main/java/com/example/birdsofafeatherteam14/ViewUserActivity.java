@@ -22,6 +22,7 @@ import com.squareup.picasso.Picasso;
 public class ViewUserActivity extends AppCompatActivity {
     private Student student;
     private AppDatabase db;
+    private int studentId;
 
     private RecyclerView coursesRecyclerView;
     private RecyclerView.LayoutManager coursesLayoutManager;
@@ -34,7 +35,7 @@ public class ViewUserActivity extends AppCompatActivity {
 
         // Get the student id that we need to display about
         Intent intent = getIntent();
-        int studentId = intent.getIntExtra("student_id",0);
+        studentId = intent.getIntExtra("student_id",0);
 
         SharedPreferences sharedPreferences = getSharedPreferences("BOAF_PREFERENCES", MODE_PRIVATE);
         // get current session info
@@ -70,17 +71,31 @@ public class ViewUserActivity extends AppCompatActivity {
         name_view.setText(student.getName());
         Picasso.get().load(url).resize(175,175).into(pic);
 
-        // link star shape checkbox to favourite and show toast
-        CheckBox favourite = (CheckBox)findViewById(R.id.starViewUser);
-        Boolean fav_state = favourite.isChecked();
+        CheckBox favourite = (CheckBox) findViewById(R.id.starViewUser);
+
+        if(student.getFavourite()){
+            favourite.setChecked(true);
+        } else {
+            favourite.setChecked(false);
+        }
+    }
+
+    // link star shape checkbox to favourite and show toast
+    public void onFavViewClick(View view) {
+        CheckBox favourite = (CheckBox) findViewById(R.id.starViewUser);
+        boolean fav_state = favourite.isChecked();
+
         if(fav_state == true){
-            db.studentDAO().update(true,studentId);
+            db.studentDAO().update(true, studentId);
+            favourite.setChecked(true);
             Toast.makeText(ViewUserActivity.this,
                     "Saved to Favorites", Toast.LENGTH_LONG).show();
+        } else {
+            db.studentDAO().update(false, studentId);
+            favourite.setChecked(false);
+            Toast.makeText(ViewUserActivity.this,
+                    "Removed from Favorites", Toast.LENGTH_LONG).show();
         }
-
-
-
     }
 
     // Send us back to the main activity
