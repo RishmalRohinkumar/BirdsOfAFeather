@@ -23,6 +23,7 @@ import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -81,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
 
         setNoCurrentSession();
 
+        setFilterSpinner();
+
         // Check if we have added the current user to a session with id -1
         if (db.studentDAO().getCurrentUsers().isEmpty()) {
             Log.i(TAG, "No current student set");
@@ -90,6 +93,32 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ProfileNameActivity.class);
             startActivity(intent);
         }
+    }
+
+    private void setFilterSpinner(){
+        Spinner filter_spinner = (Spinner) findViewById(R.id.filter_spinner);
+
+        ArrayAdapter<CharSequence> filter_adapter = ArrayAdapter.createFromResource(this,
+                R.array.filters_array, android.R.layout.simple_spinner_item);
+
+        filter_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+
+        filter_spinner.setAdapter(filter_adapter);
+
+        filter_spinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
+                        Object item = adapterView.getItemAtPosition(pos);
+                        filter(getResources().getStringArray(R.array.filters_key)[pos]);
+                    }
+                    public void onNothingSelected(AdapterView<?> adapterView){}
+                }
+        );
+    }
+
+    private void filter(String filter){
+
     }
 
     // Updates the recycler views with the other students that have overlapping classes
