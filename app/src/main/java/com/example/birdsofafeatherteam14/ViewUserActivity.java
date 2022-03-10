@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.content.*;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -68,6 +69,10 @@ public class ViewUserActivity extends AppCompatActivity {
         name_view.setText(student.getName());
         Picasso.get().load(url).resize(175,175).into(pic);
 
+        // link star shape checkbox to favourite
+        CheckBox favourite = (CheckBox)findViewById(R.id.starViewUser);
+        Boolean fav_state = favourite.isChecked();
+        db.studentDAO().update(fav_state,studentId);
 
 
     }
