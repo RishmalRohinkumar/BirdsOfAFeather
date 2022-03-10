@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.*;
 
@@ -69,10 +70,15 @@ public class ViewUserActivity extends AppCompatActivity {
         name_view.setText(student.getName());
         Picasso.get().load(url).resize(175,175).into(pic);
 
-        // link star shape checkbox to favourite
+        // link star shape checkbox to favourite and show toast
         CheckBox favourite = (CheckBox)findViewById(R.id.starViewUser);
         Boolean fav_state = favourite.isChecked();
-        db.studentDAO().update(fav_state,studentId);
+        if(fav_state == true){
+            db.studentDAO().update(true,studentId);
+            Toast.makeText(ViewUserActivity.this,
+                    "Saved to Favorites", Toast.LENGTH_LONG).show();
+        }
+
 
 
     }
