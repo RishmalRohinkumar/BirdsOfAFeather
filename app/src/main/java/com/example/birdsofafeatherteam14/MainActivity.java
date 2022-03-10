@@ -31,6 +31,7 @@ import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Session;
 import com.example.birdsofafeatherteam14.model.db.Student;
 import com.example.birdsofafeatherteam14.model.db.StudentDAO;
+import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
 
@@ -316,6 +317,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             searchButton.setText("Stop");
+
+            Log.i(TAG, "Subscribing realListener to Nearby Messages");
+            Nearby.getMessagesClient(this).subscribe(realListener);
+
         } else {
             // Give the session a name if it is unnamed
             Session currSession = getCurrentSession();
@@ -326,6 +331,9 @@ public class MainActivity extends AppCompatActivity {
             }
             searchButton.setText("Start");
             clearStudentViews();
+
+            Log.i(TAG, "Unsubscribing realListener from Nearby Messages");
+            Nearby.getMessagesClient(this).unsubscribe(realListener);
         }
     }
 
