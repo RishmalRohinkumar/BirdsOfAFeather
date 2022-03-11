@@ -77,24 +77,8 @@ public class ViewUserActivity extends AppCompatActivity{
 
     // link star shape checkbox to favourite and show toast
     public void onFavViewClick(View view) {
-        CheckBox favourite = (CheckBox) findViewById(R.id.starViewUser);
-        boolean fav_state = favourite.isChecked();
-
-        this.student.isFav = fav_state;
-
-        if(fav_state){
-            db.studentDAO().update(true, studentId);
-            this.student = db.studentDAO().get(studentId);
-            favourite.setChecked(true);
-            Toast.makeText(ViewUserActivity.this,
-                    "Saved to Favorites", Toast.LENGTH_LONG).show();
-        } else {
-            db.studentDAO().update(false, studentId);
-            this.student = db.studentDAO().get(studentId);
-            favourite.setChecked(false);
-            Toast.makeText(ViewUserActivity.this,
-                    "Removed from Favorites", Toast.LENGTH_LONG).show();
-        }
+        IFavoriteClickMediator mediator = new FavoriteClickMediator(db);
+        this.student = mediator.mediateFavoriteToggle(this, R.id.starViewUser, this.student);
     }
 
     // Send us back to the main activity

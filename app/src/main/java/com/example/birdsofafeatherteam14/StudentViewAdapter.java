@@ -105,24 +105,8 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
         }
 
         public void favClicked(View itemView) {
-            boolean fav_state = studentFavorite.isChecked();
-            int studentId = student.getId();
-            Context context = itemView.getContext();
-            db = AppDatabase.singleton(context);
-
-            if(fav_state){
-                db.studentDAO().update(true, studentId);
-                this.student = db.studentDAO().get(studentId);
-                studentFavorite.setChecked(true);
-                Toast.makeText(context,
-                        "Saved to Favorites", Toast.LENGTH_LONG).show();
-            } else {
-                db.studentDAO().update(false, studentId);
-                this.student = db.studentDAO().get(studentId);
-                studentFavorite.setChecked(false);
-                Toast.makeText(context,
-                        "Removed from Favorites", Toast.LENGTH_LONG).show();
-            }
+            IFavoriteClickMediator mediator = new FavoriteClickMediator(AppDatabase.singleton(ma));
+            this.student = mediator.mediateFavoriteToggle(ma, R.id.starStudentList, this.student);
         }
 
         @Override
