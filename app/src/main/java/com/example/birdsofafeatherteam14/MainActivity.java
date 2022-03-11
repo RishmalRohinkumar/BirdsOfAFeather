@@ -94,12 +94,18 @@ public class MainActivity extends AppCompatActivity {
 
             Session currSession = getCurrentSession();
             if (currSession == null) {return;}
+            List<? extends Student> students;
 
-            List<? extends Student> students = db.studentDAO().getAll(currSession.sessionId);
+
+            if (currSession.getId() != -2) {
+                students = db.studentDAO().getAll(currSession.sessionId);
+            } else {
+                students = db.studentDAO().getAll(true);
+            }
 
             Log.i(TAG, "Received list of students from the database of size: " + students.size());
 
-            List<Integer> classes= new ArrayList<Integer>();
+            List<Integer> classes = new ArrayList<Integer>();
 
             Student user = db.studentDAO().getCurrentUsers().get(0);
 
@@ -340,6 +346,7 @@ public class MainActivity extends AppCompatActivity {
         for (Session s : db.sessionDAO().getAll()) {
             sessionNames.add(s.getName());
         }
+        sessionNames.add("View Favorites");
         sessionNames.add("New Session");
         // IMPORTANT: I DON'T WANT TO COVER THIS EDGE CASE SO MAKE SURE THAT YOU DO NOT NAME A SESSION
         // "New Session" DURING THE DEMO PLEEEEAASSEEE
@@ -364,6 +371,9 @@ public class MainActivity extends AppCompatActivity {
                     String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
                     newSession = new Session(database.sessionDAO().count(), timeStamp, false);
                     database.sessionDAO().insert(newSession);
+                }
+                else if (chosenNameResult.equals("View Favorites")) {
+                    newSession = new Session(-2, "Favorites", true);
                 }
                 else {
                     // go through session list and find the session this name corresponds to
@@ -415,6 +425,8 @@ public class MainActivity extends AppCompatActivity {
         int id = preferences.getInt("currentSession", -1);
         if (id == -1) {
             return null;
+        } else if (id == -2) {
+            return new Session(-2, "Favorites", true);
         }
         return db.sessionDAO().get(id);
     }

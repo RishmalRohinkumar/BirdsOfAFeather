@@ -38,12 +38,10 @@ public class ViewUserActivity extends AppCompatActivity {
         studentId = intent.getIntExtra("student_id",0);
 
         SharedPreferences sharedPreferences = getSharedPreferences("BOAF_PREFERENCES", MODE_PRIVATE);
-        // get current session info
-        int sessionId = sharedPreferences.getInt("currentSession", -1);
 
         // Get the relevant course and student information from the database
         db = AppDatabase.singleton(this);
-        student = db.studentDAO().get(studentId, sessionId);
+        student = db.studentDAO().get(studentId);
         List<Course> courses = db.coursesDAO().getForStudent(studentId);
 
         // get the current student id

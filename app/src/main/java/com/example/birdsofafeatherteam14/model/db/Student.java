@@ -44,7 +44,7 @@ public class Student {
 
     public int getId() {return this.studentId;}
 
-    public int getSesssionId() {return this.sessionId;}
+    public int getSessionId() {return this.sessionId;}
 
     public boolean getFavourite(){return this.isFav;}
 
