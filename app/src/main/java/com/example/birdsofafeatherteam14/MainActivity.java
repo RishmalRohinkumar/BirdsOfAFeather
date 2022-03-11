@@ -177,7 +177,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private List<Pair<Student, Integer>> recentStudentFilter(List<Student> students){
-        List<Pair<Student, Integer>> commonClasses = noneStudentFilter(students);
+        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
+
+        List<List<Course>> classes = prepareClassOverlapList(students);
+
+
+        for (int i = 0; i < classes.size(); i++){
+            if (classes.get(i).size() != 0){
+                commonClasses.add(new Pair<>(students.get(i), classes.get(i).size()));
+            }
+        }
+
+        Collections.sort(commonClasses, Comparator.comparing(p -> -p.second));
 
         List<Pair<Student, Integer>> recentCommonClasses = new ArrayList<>();
         for(int i = db.sessionDAO().count(); i > 0; i--){
@@ -205,6 +216,23 @@ public class MainActivity extends AppCompatActivity {
 
         List<List<Course>> classes = prepareClassOverlapList(students);
 
+        for (int i = 0; i < classes.size(); i++){
+            if (classes.get(i).size() != 0){
+                commonClasses.add(new Pair<>(students.get(i), classes.get(i).size()));
+            }
+        }
+
+        List<String> quarter = {"WI", "SP", "FA"};
+
+
+
+        Collections.sort(commonClasses, new Comparator<Pair<Student, Integer>>() {
+            @Override
+            public int compare(final Pair<Student, Integer> o1, final Pair<Student, Integer> o2) {
+                return o2.second.compareTo(o1.second);
+            }
+        });
+
         return commonClasses;
     }
 
@@ -220,8 +248,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        Collections.sort(commonClasses, Collections.reverseOrder(p -> -p.second));
-
+        Collections.sort(commonClasses, new Comparator<Pair<Student, Integer>>() {
+            @Override
+            public int compare(final Pair<Student, Integer> o1, final Pair<Student, Integer> o2) {
+                return o2.second.compareTo(o1.second);
+            }
+        });
 
         return commonClasses;
     }
