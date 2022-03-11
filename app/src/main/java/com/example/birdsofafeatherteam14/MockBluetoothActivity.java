@@ -24,8 +24,12 @@ public class MockBluetoothActivity extends AppCompatActivity {
         setContentView(R.layout.activity_mock_bluetooth);
 
         TextView uuidView = findViewById(R.id.uuid_plaintext);
-        String currUserUUID = AppDatabase.singleton(getApplicationContext()).studentDAO().getCurrentUsers().get(0).uuid;
-        uuidView.setText(currUserUUID);
+        try {
+            String currUserUUID = AppDatabase.singleton(getApplicationContext()).studentDAO().getCurrentUsers().get(0).uuid;
+            uuidView.setText(currUserUUID);
+        } catch (IndexOutOfBoundsException ex) {
+            // don't set it
+        }
     }
 
     public void onEnterMessageButtonClicked(View view) {
