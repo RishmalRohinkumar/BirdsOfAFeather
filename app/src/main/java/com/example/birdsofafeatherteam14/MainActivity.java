@@ -146,22 +146,28 @@ public class MainActivity extends AppCompatActivity {
         return students;
     }
 
-    private List<Pair<Student, Integer>> noneStudentFilter(List<Student> students){
-        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
-
-        List<Integer> classes = new ArrayList<>();
+    private List<List<Course>> prepareClassOverlapList(List<Student> students){
+        List<List<Course>> classes = new ArrayList<>();
         Student user = db.studentDAO().getCurrentUsers().get(0);
         //List out common classes
         for(Student student : students){
             StudentCourseComparator comparator = new StudentCourseComparator
                     (db.coursesDAO().getForStudent(user.studentId), db.coursesDAO().getForStudent(student.getId()));
             List<Course> overlapList = comparator.compare();
-            classes.add(overlapList.size());
+            classes.add(overlapList);
         }
+        return classes;
+    }
+
+    private List<Pair<Student, Integer>> noneStudentFilter(List<Student> students){
+        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
+
+        List<List<Course>> classes = prepareClassOverlapList(students);
+
 
         for (int i = 0; i < classes.size(); i++){
-            if (classes.get(i) != 0){
-                commonClasses.add(new Pair<>(students.get(i), classes.get(i)));
+            if (classes.get(i).size() != 0){
+                commonClasses.add(new Pair<>(students.get(i), classes.get(i).size()));
             }
         }
 
@@ -184,6 +190,8 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Pair<Student, Integer>> quarterStudentFilter(List<Student> students){
         List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
+
+        List<List<Course>> classes = prepareClassOverlapList(students);
 
         return commonClasses;
     }
