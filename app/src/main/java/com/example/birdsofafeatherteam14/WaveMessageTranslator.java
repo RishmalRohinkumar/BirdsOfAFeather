@@ -16,7 +16,7 @@ public class WaveMessageTranslator {
 
     // Create a wave message in the correct format to be sent out on nearby
     public Message createMessage(Student recipient) {
-        Log.i(MainActivity.TAG, "Creating Wave from " + this.user.getUuid() + " to " + recipient.getUuid());
+        System.out.println("Creating Wave from " + this.user.getUuid() + " to " + recipient.getUuid());
         String s = WAVE_MSG_TAG + "\n" + this.user.getUuid() + "\n" + recipient.getUuid();
         return new Message(s.getBytes());
     }
@@ -33,7 +33,7 @@ public class WaveMessageTranslator {
     // returns null otherwise
     public String interpretMessage(Message message) {
         String msgContent = new String(message.getContent());
-        Log.i(MainActivity.TAG, "Interpreting Message for wave content: " + msgContent);
+        System.out.println("Interpreting Message for wave content: " + msgContent);
 
         String[] m = msgContent.split("\n");
         try {
@@ -42,7 +42,7 @@ public class WaveMessageTranslator {
                 return m[1];
             }
         } catch (IndexOutOfBoundsException | NumberFormatException e) {
-            Log.d(MainActivity.TAG, "Invalid Message Format: Doing nothing");
+            System.out.println("Invalid Message Format: Doing nothing");
         }
         return null;
     }
