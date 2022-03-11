@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     // Stuff for bluetooth
     private MessageListener messageListener;
     private MessageListener realListener;
-    private static final String TAG = "BOAF-14";
+    public static final String TAG = "BOAF-14";
 
     public static final int START_MOCK_BLUETOOTH = 99;
 
@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private String newSessionNameResult; // for the dialog where the user selects a name for the new session
 
     private Message currUserMessage; // stores the information about the current user that should be broadcasted
+    private WaveMessageTranslator wmt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
             List<Course> currStudentCourses = db.coursesDAO().getForStudent(currStudent.getId());
             StudentToCSVTranslator translator = new StudentToCSVTranslator(currStudent, currStudentCourses);
             this.currUserMessage = new Message(translator.getCSV().getBytes());
+            // Set up translator to detect, create, and interpret wave messages
+            this.wmt = new WaveMessageTranslator(currStudent);
         }
     }
 
@@ -501,8 +504,22 @@ public class MainActivity extends AppCompatActivity {
                     Log.i(TAG, "Found a bluetooth message, and am able to act upon it because db is set up.");
                     if (searching) {
                         Log.i(TAG, "Actively searching, so will check this message");
-                        String student_data = new String(message.getContent());
-                        addStudentCSVStringToDb(student_data);
+                        String msgData = new String(message.getContent());
+
+                        if (wmt.isWaveMessage(message)) {
+                            String waverUUID = wmt.interpretMessage(message);
+                            if (waverUUID != null) {
+                                // waver contains the uuid of somebody who waved at us
+                                List<Student> wavers = db.studentDAO().getByUuid(waverUUID);
+                                for (Student s : wavers) {
+                                    db.studentDAO().update(true, s.getId());
+                                }
+                            }
+                        } else {
+                            // Must be a message including a new users information
+                            addStudentCSVStringToDb(msgData);
+                        }
+
                         // whenever receive a bluetooth message, update the student views
                         updateStudentViews();
                     } else {
