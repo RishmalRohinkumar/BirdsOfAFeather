@@ -26,8 +26,14 @@ public class StudentToCSVTranslator {
         }
 
         String csv = uuid + ",,,,\n" + name + ",,,,\n" +  pic + ",,,,\n";
-        for (String s : courseStrings) {
+        for (int i = 0; i < courseStrings.size(); i++) {
+            String s = courseStrings.get(i);
+            if(i == courseStrings.size()-1){
+                csv += s;
+                continue;
+            }
             csv += s + "\n";
+
         }
 
         return csv;
