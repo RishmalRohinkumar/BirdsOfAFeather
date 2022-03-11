@@ -3,6 +3,7 @@ package com.example.birdsofafeatherteam14;
 import static com.example.birdsofafeatherteam14.Utilities.showAlert;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,10 +20,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
@@ -38,7 +41,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ExitViewUserObserver {
     // Stuff for bluetooth
     private MessageListener messageListener;
     private MessageListener realListener;
@@ -144,9 +147,20 @@ public class MainActivity extends AppCompatActivity {
 
             studentViewAdapter = new StudentViewAdapter(commonStudents, commonClasses);
             studentRecyclerView.setAdapter(studentViewAdapter);
+            studentViewAdapter.register(this);
         } else {
             Log.i(TAG, "Database null in updateStudentViews()");
         }
+    }
+
+    public void onFavRowClick(View itemView) {
+        studentViewAdapter.viewHolder.favClicked(itemView);
+        updateStudentViews();
+    }
+
+    @Override
+    public void onExitViewUser() {
+        updateStudentViews();
     }
 
 
@@ -160,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
         if (db != null) {
             //db.close();
         }
+        this.studentViewAdapter.unregister(this);
     }
 
     // receives information from the bluetooth activity
@@ -288,7 +303,6 @@ public class MainActivity extends AppCompatActivity {
                 // Ask the user to pick a session from the list of sessions, or a new session
                 pickSessionFromList();
             }
-
             searchButton.setText("Stop");
         } else {
             // Give the session a name if it is unnamed

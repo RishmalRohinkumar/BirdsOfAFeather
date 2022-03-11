@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.content.*;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -19,7 +20,7 @@ import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Student;
 import com.squareup.picasso.Picasso;
 
-public class ViewUserActivity extends AppCompatActivity {
+public class ViewUserActivity extends AppCompatActivity{
     private Student student;
     private AppDatabase db;
     private int studentId;
@@ -70,12 +71,7 @@ public class ViewUserActivity extends AppCompatActivity {
         Picasso.get().load(url).resize(175,175).into(pic);
 
         CheckBox favourite = (CheckBox) findViewById(R.id.starViewUser);
-
-        if(student.getFavourite()){
-            favourite.setChecked(true);
-        } else {
-            favourite.setChecked(false);
-        }
+        favourite.setChecked(student.getFavourite());
     }
 
     // link star shape checkbox to favourite and show toast
@@ -83,13 +79,17 @@ public class ViewUserActivity extends AppCompatActivity {
         CheckBox favourite = (CheckBox) findViewById(R.id.starViewUser);
         boolean fav_state = favourite.isChecked();
 
-        if(fav_state == true){
+        this.student.isFav = fav_state;
+
+        if(fav_state){
             db.studentDAO().update(true, studentId);
+            this.student = db.studentDAO().get(studentId);
             favourite.setChecked(true);
             Toast.makeText(ViewUserActivity.this,
                     "Saved to Favorites", Toast.LENGTH_LONG).show();
         } else {
             db.studentDAO().update(false, studentId);
+            this.student = db.studentDAO().get(studentId);
             favourite.setChecked(false);
             Toast.makeText(ViewUserActivity.this,
                     "Removed from Favorites", Toast.LENGTH_LONG).show();

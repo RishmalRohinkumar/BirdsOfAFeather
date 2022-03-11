@@ -17,16 +17,22 @@ import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Student;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.ViewHolder> {
+public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.ViewHolder>
+                                implements ExitViewUserSubject {
     private final List<? extends Student> students;
     private final List<Integer> sharedCourses;
+    public ViewHolder viewHolder;
+
+    private List<ExitViewUserObserver> observerList;
 
     public StudentViewAdapter(List<? extends Student> students, List<Integer> sharedCourses) {
         super();
         this.students = students;
         this.sharedCourses = sharedCourses;
+        this.observerList = new ArrayList<>();
     }
 
     @NonNull
@@ -35,13 +41,30 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
         View view = LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.student_row, parent, false);
-
-        return new ViewHolder(view);
+        viewHolder = new ViewHolder(view, this);
+        return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull StudentViewAdapter.ViewHolder holder, int position) {
         holder.setStudent(students.get(position), sharedCourses.get(position));
+    }
+
+    @Override
+    public void register(ExitViewUserObserver ob) {
+        this.observerList.add(ob);
+    }
+
+    @Override
+    public void unregister(ExitViewUserObserver ob) {
+        this.observerList.remove(ob);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (ExitViewUserObserver ob : this.observerList) {
+            ob.onExitViewUser();
+        }
     }
 
     @Override
@@ -54,48 +77,47 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
             implements View.OnClickListener {
         private final TextView studentNameView;
         private final ImageView studentImageView;
+        private final CheckBox studentFavorite;
         private Student student;
         private AppDatabase db;
 
-        ViewHolder(View itemView) {
+        private ExitViewUserSubject sb;
+
+        ViewHolder(View itemView, ExitViewUserSubject sb) {
             super(itemView);
             this.studentNameView = itemView.findViewById(R.id.student_row_name);
             this.studentImageView = itemView.findViewById(R.id.row_view_picture);
+            this.studentFavorite = itemView.findViewById(R.id.starStudentList);
             itemView.setOnClickListener(this);
-
-            CheckBox fav = (CheckBox) itemView.findViewById(R.id.starStudentList);
-
-            if(student.getFavourite()) {
-                fav.setChecked(true);
-            } else {
-                fav.setChecked(false);
-            }
-        }
-
-        public void onFavRowClick(View itemView) {
-            CheckBox favourite = (CheckBox) itemView.findViewById(R.id.starStudentList);
-            boolean fav_state = favourite.isChecked();
-            Context context = itemView.getContext();
-            db = AppDatabase.singleton(context);
-            int studentId = student.getId();
-
-            if(fav_state == true){
-                db.studentDAO().update(true, studentId);
-                favourite.setChecked(true);
-                Toast.makeText(context,
-                        "Saved to Favorites", Toast.LENGTH_LONG).show();
-            } else {
-                db.studentDAO().update(false, studentId);
-                favourite.setChecked(false);
-                Toast.makeText(context,
-                        "Removed from Favorites", Toast.LENGTH_LONG).show();
-            }
+            this.sb = sb;
         }
 
         public void setStudent(Student student, Integer sharedCourses) {
             this.student = student;
             this.studentNameView.setText(student.getName() + " (" + sharedCourses.toString() + ")");
             Picasso.get().load(student.getPhoto()).into(this.studentImageView);
+            this.studentFavorite.setChecked(student.getFavourite());
+        }
+
+        public void favClicked(View itemView) {
+            boolean fav_state = studentFavorite.isChecked();
+            int studentId = student.getId();
+            Context context = itemView.getContext();
+            db = AppDatabase.singleton(context);
+
+            if(fav_state){
+                db.studentDAO().update(true, studentId);
+                this.student = db.studentDAO().get(studentId);
+                studentFavorite.setChecked(true);
+                Toast.makeText(context,
+                        "Saved to Favorites", Toast.LENGTH_LONG).show();
+            } else {
+                db.studentDAO().update(false, studentId);
+                this.student = db.studentDAO().get(studentId);
+                studentFavorite.setChecked(false);
+                Toast.makeText(context,
+                        "Removed from Favorites", Toast.LENGTH_LONG).show();
+            }
         }
 
         @Override
@@ -104,6 +126,10 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
             Intent intent = new Intent(context, ViewUserActivity.class);
             intent.putExtra("student_id", this.student.getId());
             context.startActivity(intent);
+
+            sb.notifyObservers();
         }
+
+
     }
 }

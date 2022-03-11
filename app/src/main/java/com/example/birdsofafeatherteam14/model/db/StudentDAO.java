@@ -2,7 +2,9 @@ package com.example.birdsofafeatherteam14.model.db;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -11,7 +13,7 @@ public interface StudentDAO {
     @Query("SELECT * FROM students WHERE session_id=:sessionId")
     List<Student> getAll(int sessionId);
 
-    @Query("SELECT * FROM students WHERE isFav=:isFav")
+    @Query("SELECT * FROM students WHERE is_fav=:isFav")
     List<Student> getAll(boolean isFav);
 
     @Query("SELECT * FROM students WHERE student_id=:id")
@@ -24,12 +26,15 @@ public interface StudentDAO {
     @Query("SELECT * FROM students WHERE uuid=:uuid")
     List<Student> getByUuid(String uuid);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Student student);
 
     @Query("SELECT COUNT(*) from students")
     int count();
 
-    @Query("UPDATE students SET isFav =:newFav WHERE student_id=:id ")
+    @Query("UPDATE students SET is_fav=:newFav WHERE student_id=:id ")
     void update(boolean newFav, int id);
+
+//    @Update(onConflict = OnConflictStrategy.REPLACE)
+//    void updateStudent(Student student);
 }

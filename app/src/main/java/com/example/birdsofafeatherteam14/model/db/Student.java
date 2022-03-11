@@ -14,7 +14,7 @@ public class Student {
         this.name = name;
         this.photo = photo;
         this.uuid = uuid;
-        this.isFav = false;
+        this.isFav = isFav;
     }
 
     @PrimaryKey
@@ -33,7 +33,7 @@ public class Student {
     @ColumnInfo(name = "photo")
     public String photo;
 
-    @ColumnInfo(name = "isFav")
+    @ColumnInfo(name = "is_fav")
     public boolean isFav;
 
     public String getName() {return name;}
