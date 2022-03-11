@@ -7,11 +7,17 @@ import androidx.annotation.RequiresApi;
 import java.time.LocalDate;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
-public class TrackCurrentQuarter {
+public class CurrentQuarterTracker {
 
     LocalDate date;
 
-    public TrackCurrentQuarter(){date = LocalDate.now();}
+    public CurrentQuarterTracker(LocalDate date){
+        this.date = date;
+    }
+
+    public CurrentQuarterTracker() {
+        this.date = LocalDate.now();
+    }
 
     public String getQtr(){
         //get current Datetime from LocalDate api
