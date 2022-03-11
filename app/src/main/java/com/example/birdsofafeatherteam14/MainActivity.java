@@ -31,6 +31,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 
+import com.example.birdsofafeatherteam14.filters.Filter;
+import com.example.birdsofafeatherteam14.filters.NoneStudentFilter;
+import com.example.birdsofafeatherteam14.filters.QuarterStudentFilter;
+import com.example.birdsofafeatherteam14.filters.RecentStudentFilter;
+import com.example.birdsofafeatherteam14.filters.SmallStudentFilter;
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Session;
@@ -146,6 +151,8 @@ public class MainActivity extends AppCompatActivity {
         }
         return students;
     }
+
+    /*
 
     private List<List<Course>> prepareClassOverlapList(List<Student> students){
         List<List<Course>> classes = new ArrayList<>();
@@ -281,6 +288,8 @@ public class MainActivity extends AppCompatActivity {
         return commonClasses;
     }
 
+    */
+
 
     // Updates the recycler views with the other students that have overlapping classes
     // should only be called when the start button is clicked
@@ -290,16 +299,20 @@ public class MainActivity extends AppCompatActivity {
 
         switch (filter){
             case "None":
-                commonClasses = noneStudentFilter(students);
+                Filter non = new NoneStudentFilter(db);
+                commonClasses = non.studentFilter(students);
                 break;
             case "Recent":
-                commonClasses = recentStudentFilter(students);
+                Filter rec = new RecentStudentFilter(db);
+                commonClasses = rec.studentFilter(students);
                 break;
             case "Small":
-                commonClasses = smallStudentFilter(students);
+                Filter sml = new SmallStudentFilter(db);
+                commonClasses = sml.studentFilter(students);
                 break;
             case "Quarter":
-                commonClasses = quarterStudentFilter(students);
+                Filter qua = new QuarterStudentFilter(db);
+                commonClasses = qua.studentFilter(students);
                 break;
         }
 
