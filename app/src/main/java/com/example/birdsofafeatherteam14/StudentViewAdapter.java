@@ -28,11 +28,14 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
 
     private List<ExitViewUserObserver> observerList;
 
-    public StudentViewAdapter(List<? extends Student> students, List<Integer> sharedCourses) {
+    private MainActivity ma;
+
+    public StudentViewAdapter(List<? extends Student> students, List<Integer> sharedCourses, MainActivity ma) {
         super();
         this.students = students;
         this.sharedCourses = sharedCourses;
         this.observerList = new ArrayList<>();
+        this.ma = ma;
     }
 
     @NonNull
@@ -41,7 +44,7 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
         View view = LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.student_row, parent, false);
-        viewHolder = new ViewHolder(view, this);
+        viewHolder = new ViewHolder(view, this, ma);
         return viewHolder;
     }
 
@@ -82,14 +85,16 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
         private AppDatabase db;
 
         private ExitViewUserSubject sb;
+        private MainActivity ma;
 
-        ViewHolder(View itemView, ExitViewUserSubject sb) {
+        ViewHolder(View itemView, ExitViewUserSubject sb, MainActivity ma) {
             super(itemView);
             this.studentNameView = itemView.findViewById(R.id.student_row_name);
             this.studentImageView = itemView.findViewById(R.id.row_view_picture);
             this.studentFavorite = itemView.findViewById(R.id.starStudentList);
             itemView.setOnClickListener(this);
             this.sb = sb;
+            this.ma = ma;
         }
 
         public void setStudent(Student student, Integer sharedCourses) {
@@ -125,7 +130,8 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
             Context context = view.getContext();
             Intent intent = new Intent(context, ViewUserActivity.class);
             intent.putExtra("student_id", this.student.getId());
-            context.startActivity(intent);
+           // context.startActivity(intent);
+            ma.startActivityForResult(intent, MainActivity.START_VIEW_USER);
 
             sb.notifyObservers();
         }

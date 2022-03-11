@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.content.*;
 import android.util.Log;
@@ -98,6 +99,8 @@ public class ViewUserActivity extends AppCompatActivity{
 
     // Send us back to the main activity
     public void clickGoBackOnViewOtherStudentActivity(View view) {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 }

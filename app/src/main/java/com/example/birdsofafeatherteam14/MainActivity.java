@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
     private static final String TAG = "BOAF-14";
 
     public static final int START_MOCK_BLUETOOTH = 99;
+    public static final int START_VIEW_USER = 919;
 
     protected RecyclerView studentRecyclerView;
     protected RecyclerView.LayoutManager studentLayoutManager;
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
             studentLayoutManager = new LinearLayoutManager(this);
             studentRecyclerView.setLayoutManager(studentLayoutManager);
 
-            studentViewAdapter = new StudentViewAdapter(commonStudents, commonClasses);
+            studentViewAdapter = new StudentViewAdapter(commonStudents, commonClasses, this);
             studentRecyclerView.setAdapter(studentViewAdapter);
             studentViewAdapter.register(this);
         } else {
@@ -174,7 +175,9 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
         if (db != null) {
             //db.close();
         }
-        this.studentViewAdapter.unregister(this);
+        if (this.studentViewAdapter != null) {
+            this.studentViewAdapter.unregister(this);
+        }
     }
 
     // receives information from the bluetooth activity
@@ -194,6 +197,14 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
                 } else {
                     Log.i(TAG, "Received empty or invalid mock Students from Mock Bluetooth Activity");
                 }
+            }
+        }
+        else if (requestCode == START_VIEW_USER) {
+            if (resultCode == Activity.RESULT_OK) {
+                Log.i(TAG, "Received ok result from view user activity");
+                updateStudentViews();
+            } else {
+                Log.i(TAG, "Received not ok result from view user activity");
             }
         }
     }
@@ -452,7 +463,7 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
         studentRecyclerView.setLayoutManager(studentLayoutManager);
 
         // pass in empty lists so nothing is displayed
-        studentViewAdapter = new StudentViewAdapter(new ArrayList<Student>(), new ArrayList<Integer>());
+        studentViewAdapter = new StudentViewAdapter(new ArrayList<Student>(), new ArrayList<Integer>(), this);
         studentRecyclerView.setAdapter(studentViewAdapter);
     }
 
