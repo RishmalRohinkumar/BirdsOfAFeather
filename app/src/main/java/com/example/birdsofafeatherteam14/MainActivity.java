@@ -3,10 +3,8 @@ package com.example.birdsofafeatherteam14;
 import static com.example.birdsofafeatherteam14.Utilities.showAlert;
 
 import static java.lang.Integer.parseInt;
-import static java.util.Collections.*;
 
 import android.app.AlertDialog;
-import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -37,7 +35,6 @@ import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Session;
 import com.example.birdsofafeatherteam14.model.db.Student;
-import com.example.birdsofafeatherteam14.model.db.StudentDAO;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
 
@@ -213,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Pair<Student, Integer>> quarterStudentFilter(List<Student> students){
         List<List<Course>> classes = prepareClassOverlapList(students);
-        TrackCurrentQuarter date = new TrackCurrentQuarter();
+        CurrentQuarterTracker date = new CurrentQuarterTracker();
         String quarter = date.getQtr();
         String year = date.getYr();
 
