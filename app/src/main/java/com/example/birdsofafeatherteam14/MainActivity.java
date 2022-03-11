@@ -3,6 +3,7 @@ package com.example.birdsofafeatherteam14;
 import static com.example.birdsofafeatherteam14.Utilities.showAlert;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,10 +20,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
@@ -38,13 +41,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ExitViewUserObserver {
     // Stuff for bluetooth
     private MessageListener messageListener;
     private MessageListener realListener;
     private static final String TAG = "BOAF-14";
 
     public static final int START_MOCK_BLUETOOTH = 99;
+    public static final int START_VIEW_USER = 919;
 
     protected RecyclerView studentRecyclerView;
     protected RecyclerView.LayoutManager studentLayoutManager;
@@ -94,12 +98,18 @@ public class MainActivity extends AppCompatActivity {
 
             Session currSession = getCurrentSession();
             if (currSession == null) {return;}
+            List<? extends Student> students;
 
-            List<? extends Student> students = db.studentDAO().getAll(currSession.sessionId);
+
+            if (currSession.getId() != -2) {
+                students = db.studentDAO().getAll(currSession.sessionId);
+            } else {
+                students = db.studentDAO().getAll(true);
+            }
 
             Log.i(TAG, "Received list of students from the database of size: " + students.size());
 
-            List<Integer> classes= new ArrayList<Integer>();
+            List<Integer> classes = new ArrayList<Integer>();
 
             Student user = db.studentDAO().getCurrentUsers().get(0);
 
@@ -136,11 +146,22 @@ public class MainActivity extends AppCompatActivity {
             studentLayoutManager = new LinearLayoutManager(this);
             studentRecyclerView.setLayoutManager(studentLayoutManager);
 
-            studentViewAdapter = new StudentViewAdapter(commonStudents, commonClasses);
+            studentViewAdapter = new StudentViewAdapter(commonStudents, commonClasses, this);
             studentRecyclerView.setAdapter(studentViewAdapter);
+            studentViewAdapter.register(this);
         } else {
             Log.i(TAG, "Database null in updateStudentViews()");
         }
+    }
+
+    public void onFavRowClick(View itemView) {
+        studentViewAdapter.viewHolder.favClicked(itemView);
+        updateStudentViews();
+    }
+
+    @Override
+    public void onExitViewUser() {
+        updateStudentViews();
     }
 
 
@@ -153,6 +174,9 @@ public class MainActivity extends AppCompatActivity {
         // don't fuck up the database
         if (db != null) {
             //db.close();
+        }
+        if (this.studentViewAdapter != null) {
+            this.studentViewAdapter.unregister(this);
         }
     }
 
@@ -173,6 +197,14 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Log.i(TAG, "Received empty or invalid mock Students from Mock Bluetooth Activity");
                 }
+            }
+        }
+        else if (requestCode == START_VIEW_USER) {
+            if (resultCode == Activity.RESULT_OK) {
+                Log.i(TAG, "Received ok result from view user activity");
+                updateStudentViews();
+            } else {
+                Log.i(TAG, "Received not ok result from view user activity");
             }
         }
     }
@@ -198,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
             String uuid = splitByNewline[0].split(",")[0];
             String name = splitByNewline[1].split(",")[0];
             String url = splitByNewline[2].split(",")[0];
-            Student student = new Student(db.studentDAO().count()+1, currSession.getId(), name, url, uuid);
+            Student student = new Student(db.studentDAO().count()+1, currSession.getId(), name, url, uuid, false);
 
             List<Course> courses = new ArrayList<Course>();
             int currCourseId = db.coursesDAO().count() + 1;
@@ -282,7 +314,6 @@ public class MainActivity extends AppCompatActivity {
                 // Ask the user to pick a session from the list of sessions, or a new session
                 pickSessionFromList();
             }
-
             searchButton.setText("Stop");
         } else {
             // Give the session a name if it is unnamed
@@ -340,6 +371,7 @@ public class MainActivity extends AppCompatActivity {
         for (Session s : db.sessionDAO().getAll()) {
             sessionNames.add(s.getName());
         }
+        sessionNames.add("View Favorites");
         sessionNames.add("New Session");
         // IMPORTANT: I DON'T WANT TO COVER THIS EDGE CASE SO MAKE SURE THAT YOU DO NOT NAME A SESSION
         // "New Session" DURING THE DEMO PLEEEEAASSEEE
@@ -364,6 +396,9 @@ public class MainActivity extends AppCompatActivity {
                     String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
                     newSession = new Session(database.sessionDAO().count(), timeStamp, false);
                     database.sessionDAO().insert(newSession);
+                }
+                else if (chosenNameResult.equals("View Favorites")) {
+                    newSession = new Session(-2, "Favorites", true);
                 }
                 else {
                     // go through session list and find the session this name corresponds to
@@ -415,6 +450,8 @@ public class MainActivity extends AppCompatActivity {
         int id = preferences.getInt("currentSession", -1);
         if (id == -1) {
             return null;
+        } else if (id == -2) {
+            return new Session(-2, "Favorites", true);
         }
         return db.sessionDAO().get(id);
     }
@@ -426,7 +463,7 @@ public class MainActivity extends AppCompatActivity {
         studentRecyclerView.setLayoutManager(studentLayoutManager);
 
         // pass in empty lists so nothing is displayed
-        studentViewAdapter = new StudentViewAdapter(new ArrayList<Student>(), new ArrayList<Integer>());
+        studentViewAdapter = new StudentViewAdapter(new ArrayList<Student>(), new ArrayList<Integer>(), this);
         studentRecyclerView.setAdapter(studentViewAdapter);
     }
 

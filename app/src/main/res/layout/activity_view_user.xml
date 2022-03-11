@@ -24,8 +24,8 @@
         android:layout_marginStart="140dp"
         android:layout_marginTop="21dp"
         android:text="@string/textview"
-        android:textStyle="bold"
         android:textSize="32dp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/goback_button" />
 
@@ -46,8 +46,8 @@
         android:layout_marginStart="2dp"
         android:layout_marginTop="22dp"
         android:text="@string/shared_courses"
-        android:textStyle="bold"
         android:textSize="26dp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/other_Student_picture" />
 
@@ -61,6 +61,23 @@
         android:text="@string/go_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <CheckBox
+        android:id="@+id/starViewUser"
+        style="?android:attr/starStyle"
+        android:onClick="onFavViewClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="294dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="69dp"
+        android:layout_marginBottom="586dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
