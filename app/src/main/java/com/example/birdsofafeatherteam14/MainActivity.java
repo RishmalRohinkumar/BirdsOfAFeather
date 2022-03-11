@@ -209,23 +209,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private List<Pair<Student, Integer>> smallStudentFilter(List<Student> students){
-        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
-
         List<List<Course>> classes = prepareClassOverlapList(students);
 
-
-        for (int i = 0; i < classes.size(); i++){
-            if (classes.get(i).size() != 0){
-                commonClasses.add(new Pair<>(students.get(i), classes.get(i).size()));
+        List<Double> weights = new ArrayList<>();
+        for (List<Course> courses : classes){
+            double weight = 0;
+            for (Course course : courses) {
+                switch (course.courseSize){
+                    case "Tiny":
+                        weight += 1.00;
+                        break;
+                    case "Small":
+                        weight += 0.33;
+                        break;
+                    case "Medium":
+                        weight += 0.18;
+                        break;
+                    case "Large":
+                        weight += 0.10;
+                        break;
+                    case "Huge":
+                        weight += 0.06;
+                        break;
+                    case "Gigantic":
+                        weight += 0.03;
+                        break;
+                }
             }
+            if (weight > 0) weights.add(weight);
         }
 
-        Collections.sort(commonClasses, new Comparator<Pair<Student, Integer>>() {
-            @Override
-            public int compare(final Pair<Student, Integer> o1, final Pair<Student, Integer> o2) {
-                return o2.second.compareTo(o1.second);
-            }
-        });
+        List<Pair<Student, Integer>> commonClasses = mergeStudentsAndCourses(students, classes);
+
+        List<Pair<Pair<Student, Integer>, Double>> weightList = new ArrayList<>();
+        for (int i = 0; i < weights.size(); i++){
+            weightList.add(new Pair<>(commonClasses.get(i), weights.get(i)));
+        }
+
+        Collections.sort(weightList, Comparator.comparing(p -> -p.second));
+
+        commonClasses = new ArrayList<>();
+        for(Pair<Pair<Student, Integer>, Double> pair : weightList){
+            commonClasses.add(pair.first);
+        }
 
         return commonClasses;
     }
