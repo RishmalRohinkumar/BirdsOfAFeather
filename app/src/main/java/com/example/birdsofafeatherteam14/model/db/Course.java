@@ -5,7 +5,8 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "courses")
-public class Course {
+public class
+Course {
 
     @PrimaryKey
     @ColumnInfo(name = "id")
