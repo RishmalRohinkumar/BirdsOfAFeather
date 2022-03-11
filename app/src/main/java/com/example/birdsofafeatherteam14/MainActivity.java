@@ -40,6 +40,7 @@ import com.google.android.gms.nearby.messages.MessageListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -181,30 +182,30 @@ public class MainActivity extends AppCompatActivity {
         return commonClasses;
     }
 
-    private List<Pair<Student, Integer>> recentStudentFilter(List<Student> students){
-        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
+    private int quarterDist(String currQuarter, String inpQuarter){
+        if (inpQuarter.equals("SS1") || inpQuarter.equals("SS2")) inpQuarter = "SS";
+        if (currQuarter.equals("SS1") || currQuarter.equals("SS2")) currQuarter = "SS";
+        List<String> quarters = new ArrayList<>(Arrays.asList("FA", "WI", "SP", "SS"));
 
+        return ((quarters.indexOf(currQuarter) - quarters.indexOf(inpQuarter)) % 4);
+    }
+
+    private int calculateAge(String currQuarter, String currYear, String inpQuarter, String inpYear){
+        int yearGap = parseInt(currYear) - parseInt(inpYear);
+        if (yearGap >= 2) return 1;
+        switch (yearGap){
+            case 1:
+            case 0:
+        }
+    }
+
+    private List<Pair<Student, Integer>> recentStudentFilter(List<Student> students){
         List<List<Course>> classes = prepareClassOverlapList(students);
 
+        CurrentQuarterTracker date = new CurrentQuarterTracker();
+        String quarter = date.getQtr();
+        String year = date.getYr();
 
-        for (int i = 0; i < classes.size(); i++){
-            if (classes.get(i).size() != 0){
-                commonClasses.add(new Pair<>(students.get(i), classes.get(i).size()));
-            }
-        }
-
-        Collections.sort(commonClasses, Comparator.comparing(p -> -p.second));
-
-        List<Pair<Student, Integer>> recentCommonClasses = new ArrayList<>();
-        for(int i = db.sessionDAO().count(); i > 0; i--){
-            for(Pair<Student, Integer> p: commonClasses){
-                if(p.first.getSesssionId() == i) {
-                    recentCommonClasses.add(p);
-                }
-            }
-        }
-
-        return recentCommonClasses;
 
     }
 
