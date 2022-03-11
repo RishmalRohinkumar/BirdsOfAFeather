@@ -177,13 +177,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private List<Pair<Student, Integer>> recentStudentFilter(List<Student> students){
-        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
+        List<Pair<Student, Integer>> commonClasses = noneStudentFilter(students);
 
-        return commonClasses;
+        List<Pair<Student, Integer>> recentCommonClasses = new ArrayList<>();
+        for(int i = db.sessionDAO().count(); i > 0; i--){
+            for(Pair<Student, Integer> p: commonClasses){
+                if(p.first.getSesssionId() == i) {
+                    recentCommonClasses.add(p);
+                }
+            }
+        }
+
+        return recentCommonClasses;
+
     }
 
     private List<Pair<Student, Integer>> smallStudentFilter(List<Student> students){
         List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
+
+
 
         return commonClasses;
     }
@@ -192,6 +204,24 @@ public class MainActivity extends AppCompatActivity {
         List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
 
         List<List<Course>> classes = prepareClassOverlapList(students);
+
+        return commonClasses;
+    }
+
+    private List<Pair<Student, Integer>> leastStudentFilter(List<Student> students){
+        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
+
+        List<List<Course>> classes = prepareClassOverlapList(students);
+
+
+        for (int i = 0; i < classes.size(); i++){
+            if (classes.get(i).size() != 0){
+                commonClasses.add(new Pair<>(students.get(i), classes.get(i).size()));
+            }
+        }
+
+        Collections.sort(commonClasses, Collections.reverseOrder(p -> -p.second));
+
 
         return commonClasses;
     }
@@ -215,6 +245,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case "Quarter":
                 commonClasses = quarterStudentFilter(students);
+                break;
+            case "Least":
+                commonClasses = leastStudentFilter(students);
                 break;
         }
 
