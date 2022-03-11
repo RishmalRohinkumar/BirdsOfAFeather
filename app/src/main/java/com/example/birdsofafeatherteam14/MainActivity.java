@@ -120,94 +120,93 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    private List<Pair<Student, Integer>> prepareStudentList(){
-        List<Pair<Student, Integer>> commonStudents = new ArrayList<>();
+    private List<Student> prepareStudentList(){
+        List<Student> students = new ArrayList<>();
 
         if (db != null) {
             Log.i(TAG, "Database not null in prepareStudentList");
 
             Session currSession = getCurrentSession();
-            if (currSession == null) {return commonStudents;}
+            if (currSession == null) {return students;}
 
-            List<? extends Student> students = db.studentDAO().getAll(currSession.sessionId);
+            students = db.studentDAO().getAll(currSession.sessionId);
 
             Log.i(TAG, "Received list of students from the database of size: " + students.size());
 
-            List<Integer> classes= new ArrayList<Integer>();
-
             Student user = db.studentDAO().getCurrentUsers().get(0);
 
-            Log.i(TAG, "Going through other students and selecting the common courses");
             //Remove user from student list
             students.remove(user);
 
-            //List out common classes
-            for(Student student : students){
-                StudentCourseComparator comparator = new StudentCourseComparator
-                        (db.coursesDAO().getForStudent(user.studentId), db.coursesDAO().getForStudent(student.getId()));
-                List<Course> overlapList = comparator.compare();
-                classes.add(overlapList.size());
-            }
-
-            // These lists are the final versions which will be passed into the recycler views
-            // and ultimately displayed on the screen. They have been curated to only include
-            // students that the current student has common classes with. The commonClasses<Integer>
-            // list is so that the recycler view knows how many common classes the current user student
-            // and the student in question have, so it can display that information to the screen.
-
-            for (int i = 0; i < classes.size(); i++){
-                if (classes.get(i) != 0){
-                    commonStudents.add(new Pair<>(students.get(i), classes.get(i)));
-                }
-            }
-
-            return commonStudents;
+            return students;
 
         } else {
             Log.i(TAG, "Database null in updateStudentViews()");
         }
-        return commonStudents;
+        return students;
     }
 
-    private List<Pair<Student, Integer>> noneStudentFilter(List<Pair<Student, Integer>> currList){
-        // Sort lists in order of class commonality
-        Collections.sort(currList, Comparator.comparing(p -> -p.second));
-        return currList;
+    private List<Pair<Student, Integer>> noneStudentFilter(List<Student> students){
+        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
+
+        List<Integer> classes = new ArrayList<>();
+        Student user = db.studentDAO().getCurrentUsers().get(0);
+        //List out common classes
+        for(Student student : students){
+            StudentCourseComparator comparator = new StudentCourseComparator
+                    (db.coursesDAO().getForStudent(user.studentId), db.coursesDAO().getForStudent(student.getId()));
+            List<Course> overlapList = comparator.compare();
+            classes.add(overlapList.size());
+        }
+
+        for (int i = 0; i < classes.size(); i++){
+            if (classes.get(i) != 0){
+                commonClasses.add(new Pair<>(students.get(i), classes.get(i)));
+            }
+        }
+
+        Collections.sort(commonClasses, Comparator.comparing(p -> -p.second));
+
+        return commonClasses;
     }
 
-    private List<Pair<Student, Integer>> recentStudentFilter(List<Pair<Student, Integer>> currList){
+    private List<Pair<Student, Integer>> recentStudentFilter(List<Student> students){
+        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
 
-        return currList;
+        return commonClasses;
     }
 
-    private List<Pair<Student, Integer>> smallStudentFilter(List<Pair<Student, Integer>> currList){
+    private List<Pair<Student, Integer>> smallStudentFilter(List<Student> students){
+        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
 
-        return currList;
+        return commonClasses;
     }
 
-    private List<Pair<Student, Integer>> quarterStudentFilter(List<Pair<Student, Integer>> currList){
+    private List<Pair<Student, Integer>> quarterStudentFilter(List<Student> students){
+        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
 
-        return currList;
+        return commonClasses;
     }
 
 
     // Updates the recycler views with the other students that have overlapping classes
     // should only be called when the start button is clicked
     private void updateStudentViews(String filter) {
-        List<Pair<Student, Integer>> commonStudents = prepareStudentList();
+        List<Student> students = prepareStudentList();
+        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
 
         switch (filter){
             case "None":
-                commonStudents = noneStudentFilter(commonStudents);
+                commonClasses = noneStudentFilter(students);
                 break;
             case "Recent":
-                commonStudents = recentStudentFilter(commonStudents);
+                commonClasses = recentStudentFilter(students);
                 break;
             case "Small":
-                commonStudents = smallStudentFilter(commonStudents);
+                commonClasses = smallStudentFilter(students);
                 break;
             case "Quarter":
-                commonStudents = quarterStudentFilter(commonStudents);
+                commonClasses = quarterStudentFilter(students);
                 break;
         }
 
@@ -216,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         List<Student> finalStudent = new ArrayList<>();
         List<Integer> finalCourses = new ArrayList<>();
 
-        for (Pair p : commonStudents) {
+        for (Pair p : commonClasses) {
             finalStudent.add((Student) p.first);
             finalCourses.add((Integer) p.second);
         }
