@@ -211,6 +211,28 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private List<Pair<Student, Integer>> smallStudentFilter(List<Student> students){
+        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
+
+        List<List<Course>> classes = prepareClassOverlapList(students);
+
+
+        for (int i = 0; i < classes.size(); i++){
+            if (classes.get(i).size() != 0){
+                commonClasses.add(new Pair<>(students.get(i), classes.get(i).size()));
+            }
+        }
+
+        Collections.sort(commonClasses, new Comparator<Pair<Student, Integer>>() {
+            @Override
+            public int compare(final Pair<Student, Integer> o1, final Pair<Student, Integer> o2) {
+                return o2.second.compareTo(o1.second);
+            }
+        });
+
+        return commonClasses;
+    }
+
     private List<Pair<Student, Integer>> quarterStudentFilter(List<Student> students){
         List<List<Course>> classes = prepareClassOverlapList(students);
         TrackCurrentQuarter date = new TrackCurrentQuarter();
@@ -231,28 +253,6 @@ public class MainActivity extends AppCompatActivity {
         List<Pair<Student, Integer>> commonClasses = mergeStudentsAndCourses(students, quarterCourseList);
 
         Collections.sort(commonClasses, Comparator.comparing(p -> -p.second));
-
-        return commonClasses;
-    }
-
-    private List<Pair<Student, Integer>> smallStudentFilter(List<Student> students){
-        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
-
-        List<List<Course>> classes = prepareClassOverlapList(students);
-
-
-        for (int i = 0; i < classes.size(); i++){
-            if (classes.get(i).size() != 0){
-                commonClasses.add(new Pair<>(students.get(i), classes.get(i).size()));
-            }
-        }
-
-        Collections.sort(commonClasses, new Comparator<Pair<Student, Integer>>() {
-            @Override
-            public int compare(final Pair<Student, Integer> o1, final Pair<Student, Integer> o2) {
-                return o2.second.compareTo(o1.second);
-            }
-        });
 
         return commonClasses;
     }
