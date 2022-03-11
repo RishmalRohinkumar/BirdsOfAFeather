@@ -2,6 +2,7 @@ package com.example.birdsofafeatherteam14;
 
 import static com.example.birdsofafeatherteam14.Utilities.showAlert;
 
+import static java.lang.Integer.parseInt;
 import static java.util.Collections.*;
 
 import android.app.AlertDialog;
@@ -47,6 +48,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity {
     // Stuff for bluetooth
     private MessageListener messageListener;
@@ -86,8 +88,6 @@ public class MainActivity extends AppCompatActivity {
 
         currentFilter = "None";
 
-        setFilterSpinner();
-
         // Check if we have added the current user to a session with id -1
         if (db.studentDAO().getCurrentUsers().isEmpty()) {
             Log.i(TAG, "No current student set");
@@ -96,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
             // user will already be stored in the database
             Intent intent = new Intent(this, ProfileNameActivity.class);
             startActivity(intent);
+        }
+        else{
+            setFilterSpinner();
         }
     }
 
@@ -150,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         List<List<Course>> classes = new ArrayList<>();
         Student user = db.studentDAO().getCurrentUsers().get(0);
         //List out common classes
-        for(Student student : students){
+        for (Student student : students) {
             StudentCourseComparator comparator = new StudentCourseComparator
                     (db.coursesDAO().getForStudent(user.studentId), db.coursesDAO().getForStudent(student.getId()));
             List<Course> overlapList = comparator.compare();
@@ -159,17 +162,22 @@ public class MainActivity extends AppCompatActivity {
         return classes;
     }
 
-    private List<Pair<Student, Integer>> noneStudentFilter(List<Student> students){
+    private List<Pair<Student, Integer>> mergeStudentsAndCourses(List<Student> students, List<List<Course>> classes){
         List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
-
-        List<List<Course>> classes = prepareClassOverlapList(students);
-
-
         for (int i = 0; i < classes.size(); i++){
             if (classes.get(i).size() != 0){
                 commonClasses.add(new Pair<>(students.get(i), classes.get(i).size()));
             }
         }
+
+        return commonClasses;
+    }
+
+    private List<Pair<Student, Integer>> noneStudentFilter(List<Student> students){
+        List<List<Course>> classes = prepareClassOverlapList(students);
+
+        List<Pair<Student, Integer>> commonClasses = mergeStudentsAndCourses(students, classes);
+
 
         Collections.sort(commonClasses, Comparator.comparing(p -> -p.second));
 
@@ -189,9 +197,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private List<Pair<Student, Integer>> quarterStudentFilter(List<Student> students){
-        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
-
         List<List<Course>> classes = prepareClassOverlapList(students);
+        TrackCurrentQuarter date = new TrackCurrentQuarter();
+        String quarter = date.getQtr();
+        String year = date.getYr();
+
+        List<List<Course>> quarterCourseList = new ArrayList<>();
+        for (List<Course> courses : classes){
+            List<Course> quarterCourses = new ArrayList<>();
+            for (Course course : courses){
+                if (course.courseQuarter.equals(quarter) && course.courseYear == parseInt(year)) {
+                    quarterCourses.add(course);
+                }
+            }
+            quarterCourseList.add(quarterCourses);
+        }
+
+        List<Pair<Student, Integer>> commonClasses = mergeStudentsAndCourses(students, quarterCourseList);
+
+        Collections.sort(commonClasses, Comparator.comparing(p -> -p.second));
 
         return commonClasses;
     }
@@ -300,10 +324,10 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 3; i < splitByNewline.length; i++) {
                 String[] courseInfo = splitByNewline[i].split(",");
 
-                int courseYear = Integer.parseInt(courseInfo[YEAR_INDEX]);
+                int courseYear = parseInt(courseInfo[YEAR_INDEX]);
                 String courseQuarter = courseInfo[QUARTER_INDEX];
                 String courseSubject = courseInfo[SUBJECT_INDEX];
-                int courseNum = Integer.parseInt(courseInfo[NUMBER_INDEX]);
+                int courseNum = parseInt(courseInfo[NUMBER_INDEX]);
                 String courseSize = courseInfo[SIZE_INDEX];
                 // POST INCREMENT SO IT'S ONE GREATER FOR THE NEXT COURSE
                 // DOING IT THIS WAY BECAUSE WE ARE NOT ADDING COURSES TO THE DB
