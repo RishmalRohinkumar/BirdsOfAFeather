@@ -4,7 +4,7 @@ import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 
 public class QuarterFilterFactory implements IFilterFactory{
     private AppDatabase db;
-    QuarterFilterFactory(AppDatabase db) {
+    public QuarterFilterFactory(AppDatabase db) {
         this.db = db;
     }
 

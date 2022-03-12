@@ -4,7 +4,7 @@ import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 
 public class RecentFilterFactory implements IFilterFactory{
     private AppDatabase db;
-    RecentFilterFactory(AppDatabase db) {
+    public RecentFilterFactory(AppDatabase db) {
         this.db = db;
     }
 
