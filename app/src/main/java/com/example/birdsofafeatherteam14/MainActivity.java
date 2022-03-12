@@ -5,6 +5,7 @@ import static com.example.birdsofafeatherteam14.Utilities.showAlert;
 import static java.lang.Integer.parseInt;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -25,10 +26,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.birdsofafeatherteam14.filters.Filter;
@@ -40,6 +43,8 @@ import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Session;
 import com.example.birdsofafeatherteam14.model.db.Student;
+import com.example.birdsofafeatherteam14.model.db.StudentDAO;
+import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
 
@@ -52,13 +57,14 @@ import java.util.Date;
 import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ExitViewUserObserver {
     // Stuff for bluetooth
     private MessageListener messageListener;
     private MessageListener realListener;
-    private static final String TAG = "BOAF-14";
+    public static final String TAG = "BOAF-14";
 
     public static final int START_MOCK_BLUETOOTH = 99;
+    public static final int START_VIEW_USER = 919;
 
     protected RecyclerView studentRecyclerView;
     protected RecyclerView.LayoutManager studentLayoutManager;
@@ -74,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
     private String newSessionNameResult; // for the dialog where the user selects a name for the new session
 
     private String currentFilter;
+    private Message currUserMessage; // stores the information about the current user that should be broadcasted
+    private WaveMessageTranslator wmt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,8 +107,14 @@ public class MainActivity extends AppCompatActivity {
             // user will already be stored in the database
             Intent intent = new Intent(this, ProfileNameActivity.class);
             startActivity(intent);
-        }
-        else{
+        } else {
+            // set up message that will be broadcast with the current users information
+            Student currStudent = db.studentDAO().getCurrentUsers().get(0);
+            List<Course> currStudentCourses = db.coursesDAO().getForStudent(currStudent.getId());
+            StudentToCSVTranslator translator = new StudentToCSVTranslator(currStudent, currStudentCourses);
+            this.currUserMessage = new Message(translator.getCSV().getBytes());
+            // Set up translator to detect, create, and interpret wave messages
+            this.wmt = new WaveMessageTranslator(currStudent);
             setFilterSpinner();
         }
     }
@@ -135,7 +149,14 @@ public class MainActivity extends AppCompatActivity {
             Session currSession = getCurrentSession();
             if (currSession == null) {return students;}
 
-            students = db.studentDAO().getAll(currSession.sessionId);
+            Log.i(TAG, "Received list of students from the database of size: " + students.size());
+
+            if (currSession.getId() != -2) {
+                students = db.studentDAO().getAll(currSession.sessionId);
+            } else {
+                students = db.studentDAO().getAll(true);
+            }
+
 
             Log.i(TAG, "Received list of students from the database of size: " + students.size());
 
@@ -151,145 +172,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return students;
     }
-
-    /*
-
-    private List<List<Course>> prepareClassOverlapList(List<Student> students){
-        List<List<Course>> classes = new ArrayList<>();
-        Student user = db.studentDAO().getCurrentUsers().get(0);
-        //List out common classes
-        for (Student student : students) {
-            StudentCourseComparator comparator = new StudentCourseComparator
-                    (db.coursesDAO().getForStudent(user.studentId), db.coursesDAO().getForStudent(student.getId()));
-            List<Course> overlapList = comparator.compare();
-            classes.add(overlapList);
-        }
-        return classes;
-    }
-
-    private List<Pair<Student, Integer>> mergeStudentsAndCourses(List<Student> students, List<List<Course>> classes){
-        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
-        for (int i = 0; i < classes.size(); i++){
-            if (classes.get(i).size() != 0){
-                commonClasses.add(new Pair<>(students.get(i), classes.get(i).size()));
-            }
-        }
-
-        return commonClasses;
-    }
-
-    private List<Pair<Student, Integer>> noneStudentFilter(List<Student> students){
-        List<List<Course>> classes = prepareClassOverlapList(students);
-
-        List<Pair<Student, Integer>> commonClasses = mergeStudentsAndCourses(students, classes);
-
-
-        Collections.sort(commonClasses, Comparator.comparing(p -> -p.second));
-
-        return commonClasses;
-    }
-
-    private int quarterDist(String currQuarter, String inpQuarter){
-        if (inpQuarter.equals("SS1") || inpQuarter.equals("SS2")) inpQuarter = "SS";
-        if (currQuarter.equals("SS1") || currQuarter.equals("SS2")) currQuarter = "SS";
-        List<String> quarters = new ArrayList<>(Arrays.asList("FA", "WI", "SP", "SS"));
-
-        return ((quarters.indexOf(currQuarter) - quarters.indexOf(inpQuarter)) % 4);
-    }
-
-    private int calculateAge(String currQuarter, String currYear, String inpQuarter, String inpYear){
-        int yearGap = parseInt(currYear) - parseInt(inpYear);
-        if (yearGap >= 2) return 1;
-        switch (yearGap){
-            case 1:
-            case 0:
-        }
-    }
-
-    private List<Pair<Student, Integer>> recentStudentFilter(List<Student> students){
-        List<List<Course>> classes = prepareClassOverlapList(students);
-
-        CurrentQuarterTracker date = new CurrentQuarterTracker();
-        String quarter = date.getQtr();
-        String year = date.getYr();
-
-
-    }
-
-    private List<Pair<Student, Integer>> smallStudentFilter(List<Student> students){
-        List<List<Course>> classes = prepareClassOverlapList(students);
-
-        List<Double> weights = new ArrayList<>();
-        for (List<Course> courses : classes){
-            double weight = 0;
-            for (Course course : courses) {
-                switch (course.courseSize){
-                    case "Tiny":
-                        weight += 1.00;
-                        break;
-                    case "Small":
-                        weight += 0.33;
-                        break;
-                    case "Medium":
-                        weight += 0.18;
-                        break;
-                    case "Large":
-                        weight += 0.10;
-                        break;
-                    case "Huge":
-                        weight += 0.06;
-                        break;
-                    case "Gigantic":
-                        weight += 0.03;
-                        break;
-                }
-            }
-            if (weight > 0) weights.add(weight);
-        }
-
-        List<Pair<Student, Integer>> commonClasses = mergeStudentsAndCourses(students, classes);
-
-        List<Pair<Pair<Student, Integer>, Double>> weightList = new ArrayList<>();
-        for (int i = 0; i < weights.size(); i++){
-            weightList.add(new Pair<>(commonClasses.get(i), weights.get(i)));
-        }
-
-        Collections.sort(weightList, Comparator.comparing(p -> -p.second));
-
-        commonClasses = new ArrayList<>();
-        for(Pair<Pair<Student, Integer>, Double> pair : weightList){
-            commonClasses.add(pair.first);
-        }
-
-        return commonClasses;
-    }
-
-    private List<Pair<Student, Integer>> quarterStudentFilter(List<Student> students){
-        List<List<Course>> classes = prepareClassOverlapList(students);
-        CurrentQuarterTracker date = new CurrentQuarterTracker();
-        String quarter = date.getQtr();
-        String year = date.getYr();
-
-        List<List<Course>> quarterCourseList = new ArrayList<>();
-        for (List<Course> courses : classes){
-            List<Course> quarterCourses = new ArrayList<>();
-            for (Course course : courses){
-                if (course.courseQuarter.equals(quarter) && course.courseYear == parseInt(year)) {
-                    quarterCourses.add(course);
-                }
-            }
-            quarterCourseList.add(quarterCourses);
-        }
-
-        List<Pair<Student, Integer>> commonClasses = mergeStudentsAndCourses(students, quarterCourseList);
-
-        Collections.sort(commonClasses, Comparator.comparing(p -> -p.second));
-
-        return commonClasses;
-    }
-
-    */
-
 
     // Updates the recycler views with the other students that have overlapping classes
     // should only be called when the start button is clicked
@@ -316,14 +198,33 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        currentFilter = filter;
+        this.currentFilter = filter;
 
         List<Student> finalStudent = new ArrayList<>();
         List<Integer> finalCourses = new ArrayList<>();
 
+
+        List<Pair<Student, Integer>> wavedStudents = new ArrayList<>();
+        List<Pair<Student, Integer>> notWavedStudents = new ArrayList<>();
+        for (Pair<Student, Integer> s : commonClasses) {
+            if (s.first.wave) {
+                wavedStudents.add(new Pair(s.first, s.second));
+            } else {
+                notWavedStudents.add(new Pair(s.first, s.second));
+            }
+        }
+
+        commonClasses.clear();
+        for (Pair<Student, Integer> p : wavedStudents) {
+            commonClasses.add(p);
+        }
+        for (Pair<Student, Integer> p : notWavedStudents) {
+            commonClasses.add(p);
+        }
+
         for (Pair p : commonClasses) {
-            finalStudent.add((Student) p.first);
-            finalCourses.add((Integer) p.second);
+            finalStudent.add((Student)(p.first));
+            finalCourses.add((Integer)(p.second));
         }
 
         Log.i(TAG, "Common courses found: starting to set up RecyclerViews");
@@ -332,10 +233,14 @@ public class MainActivity extends AppCompatActivity {
         studentLayoutManager = new LinearLayoutManager(this);
         studentRecyclerView.setLayoutManager(studentLayoutManager);
 
-        studentViewAdapter = new StudentViewAdapter(finalStudent, finalCourses);
+        studentViewAdapter = new StudentViewAdapter(finalStudent, finalCourses, this);
         studentRecyclerView.setAdapter(studentViewAdapter);
     }
 
+    @Override
+    public void onExitViewUser() {
+        updateStudentViews(this.currentFilter);
+    }
 
     @Override
     protected void onDestroy() {
@@ -346,6 +251,13 @@ public class MainActivity extends AppCompatActivity {
         // don't fuck up the database
         if (db != null) {
             //db.close();
+        }
+        if (searching) {
+            Log.i(TAG, "Unpublishing information about the current user");
+            Nearby.getMessagesClient(this).unpublish(this.currUserMessage);
+        }
+        if (this.studentViewAdapter != null) {
+            this.studentViewAdapter.unregister(this);
         }
     }
 
@@ -368,6 +280,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+        else if (requestCode == START_VIEW_USER) {
+            if (resultCode == Activity.RESULT_OK) {
+                Log.i(TAG, "Received ok result from view user activity");
+                updateStudentViews(this.currentFilter);
+            } else {
+                Log.i(TAG, "Received not ok result from view user activity");
+            }
+        }
     }
 
     // Deals with converting the CSV string from the Mock Bluetooth Task
@@ -388,14 +308,32 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             String[] splitByNewline = str.split("\n");
+            String[] lastLine = splitByNewline[splitByNewline.length - 1].split(",");
+
             String uuid = splitByNewline[0].split(",")[0];
             String name = splitByNewline[1].split(",")[0];
             String url = splitByNewline[2].split(",")[0];
-            Student student = new Student(db.studentDAO().count()+1, currSession.getId(), name, url, uuid);
+            Student student = new Student(db.studentDAO().count()+1, currSession.getId(), name, url, uuid, false);
 
             List<Course> courses = new ArrayList<Course>();
             int currCourseId = db.coursesDAO().count() + 1;
-            for (int i = 3; i < splitByNewline.length; i++) {
+            boolean wave = false;
+
+            // the last line is specifying a wave
+            if (lastLine[1].equals("wave")) {
+                // This is a msg specifying a new person that is waving
+                wave = true;
+            }
+
+            int lastCourseLine = splitByNewline.length;
+            if (wave) {
+                // In this case, the last line doesn't hold a course, so we don't want to iterate onto
+                // it while searching for courses
+                lastCourseLine--;
+            }
+
+
+            for (int i = 3; i < lastCourseLine; i++) {
                 String[] courseInfo = splitByNewline[i].split(",");
 
                 int courseYear = parseInt(courseInfo[YEAR_INDEX]);
@@ -414,11 +352,34 @@ public class MainActivity extends AppCompatActivity {
 
             // only add to db if all good and nothing went wrong earlier
 
+            // if student with this uuid and in this session already in database, dont add
+            List<Student> sameStudentList = db.studentDAO().getByUuid(student.getUuid());
+            if (!sameStudentList.isEmpty()) {
+                for (Student s : sameStudentList) {
+                    if (s.getSessionId() == currSession.getId()) {
+                        return;
+                    }
+                }
+            }
+
             db.studentDAO().insert(student);
             Log.i(TAG, "Successfully Added a student from MockBluetooth to the database");
             for (Course c : courses) {
                 db.coursesDAO().insert(c);
                 Log.i(TAG, "Successfully Added a course from MockBluetooth to the database");
+            }
+
+            if (wave) {
+                String recipientUUID = lastLine[0];
+                // last line also includes a wave, so lets handle that
+                Student currentUser = db.studentDAO().getCurrentUsers().get(0);
+                if (currentUser.uuid.equals(recipientUUID)) {
+                    String message = name + " has waved to you!";
+                    Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+
+                    int otherId = student.getId();
+                    db.studentDAO().updateWave(true, otherId);
+                }
             }
 
         } catch (IndexOutOfBoundsException | NumberFormatException e) {
@@ -475,8 +436,13 @@ public class MainActivity extends AppCompatActivity {
                 // Ask the user to pick a session from the list of sessions, or a new session
                 pickSessionFromList();
             }
-
             searchButton.setText("Stop");
+
+            Log.i(TAG, "Subscribing realListener to Nearby Messages");
+            Nearby.getMessagesClient(this).subscribe(realListener);
+            Log.i(TAG, "Starting to publish information about the current user");
+            Nearby.getMessagesClient(this).publish(this.currUserMessage);
+
         } else {
             // Give the session a name if it is unnamed
             Session currSession = getCurrentSession();
@@ -487,6 +453,11 @@ public class MainActivity extends AppCompatActivity {
             }
             searchButton.setText("Start");
             clearStudentViews();
+
+            Log.i(TAG, "Unsubscribing realListener from Nearby Messages");
+            Nearby.getMessagesClient(this).unsubscribe(realListener);
+            Log.i(TAG, "Unpublishing information about the current user");
+            Nearby.getMessagesClient(this).unpublish(this.currUserMessage);
         }
     }
 
@@ -533,6 +504,7 @@ public class MainActivity extends AppCompatActivity {
         for (Session s : db.sessionDAO().getAll()) {
             sessionNames.add(s.getName());
         }
+        sessionNames.add("View Favorites");
         sessionNames.add("New Session");
         // IMPORTANT: I DON'T WANT TO COVER THIS EDGE CASE SO MAKE SURE THAT YOU DO NOT NAME A SESSION
         // "New Session" DURING THE DEMO PLEEEEAASSEEE
@@ -557,6 +529,9 @@ public class MainActivity extends AppCompatActivity {
                     String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
                     newSession = new Session(database.sessionDAO().count(), timeStamp, false);
                     database.sessionDAO().insert(newSession);
+                }
+                else if (chosenNameResult.equals("View Favorites")) {
+                    newSession = new Session(-2, "Favorites", true);
                 }
                 else {
                     // go through session list and find the session this name corresponds to
@@ -608,6 +583,8 @@ public class MainActivity extends AppCompatActivity {
         int id = preferences.getInt("currentSession", -1);
         if (id == -1) {
             return null;
+        } else if (id == -2) {
+            return new Session(-2, "Favorites", true);
         }
         return db.sessionDAO().get(id);
     }
@@ -619,7 +596,7 @@ public class MainActivity extends AppCompatActivity {
         studentRecyclerView.setLayoutManager(studentLayoutManager);
 
         // pass in empty lists so nothing is displayed
-        studentViewAdapter = new StudentViewAdapter(new ArrayList<Student>(), new ArrayList<Integer>());
+        studentViewAdapter = new StudentViewAdapter(new ArrayList<Student>(), new ArrayList<Integer>(), this);
         studentRecyclerView.setAdapter(studentViewAdapter);
     }
 
@@ -638,8 +615,22 @@ public class MainActivity extends AppCompatActivity {
                     Log.i(TAG, "Found a bluetooth message, and am able to act upon it because db is set up.");
                     if (searching) {
                         Log.i(TAG, "Actively searching, so will check this message");
-                        String student_data = new String(message.getContent());
-                        addStudentCSVStringToDb(student_data);
+                        String msgData = new String(message.getContent());
+
+                        if (wmt.isWaveMessage(message)) {
+                            String waverUUID = wmt.interpretMessage(message);
+                            if (waverUUID != null) {
+                                // waver contains the uuid of somebody who waved at us
+                                List<Student> wavers = db.studentDAO().getByUuid(waverUUID);
+                                for (Student s : wavers) {
+                                    db.studentDAO().updateWave(true, s.getId());
+                                }
+                            }
+                        } else {
+                            // Must be a message including a new users information
+                            addStudentCSVStringToDb(msgData);
+                        }
+
                         // whenever receive a bluetooth message, update the student views
                         updateStudentViews(currentFilter);
                     } else {
@@ -656,5 +647,7 @@ public class MainActivity extends AppCompatActivity {
                 // Does nothing atm
             }
         };
+
+
     }
 }

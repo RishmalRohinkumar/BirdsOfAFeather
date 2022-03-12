@@ -140,7 +140,7 @@ public class ProfileCoursesActivity extends AppCompatActivity implements Adapter
         // Set up Database and add the student to it
         AppDatabase db = AppDatabase.singleton(this);
         String uniqueID = UUID.randomUUID().toString();
-        Student student = new Student(db.studentDAO().count()+1, MainActivity.CURRENT_USER_SESSION_ID, name, imageUrl, uniqueID);
+        Student student = new Student(db.studentDAO().count()+1, MainActivity.CURRENT_USER_SESSION_ID, name, imageUrl, uniqueID, false);
         db.studentDAO().insert(student);
 
         // track the id of the courses since we aren't adding them to the database as they are entered,

@@ -9,6 +9,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 
 import java.util.ArrayList;
 
@@ -19,6 +22,14 @@ public class MockBluetoothActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mock_bluetooth);
+
+        TextView uuidView = findViewById(R.id.uuid_plaintext);
+        try {
+            String currUserUUID = AppDatabase.singleton(getApplicationContext()).studentDAO().getCurrentUsers().get(0).uuid;
+            uuidView.setText(currUserUUID);
+        } catch (IndexOutOfBoundsException ex) {
+            // don't set it
+        }
     }
 
     public void onEnterMessageButtonClicked(View view) {

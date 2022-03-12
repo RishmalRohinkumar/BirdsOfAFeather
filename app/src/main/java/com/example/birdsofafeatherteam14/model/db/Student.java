@@ -7,12 +7,15 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "students")
 public class Student {
 
-    public Student(int studentId, int sessionId, String name, String photo, String uuid) {
+
+    public Student(int studentId, int sessionId, String name, String photo, String uuid, boolean isFav) {
         this.studentId = studentId;
         this.sessionId = sessionId;
         this.name = name;
         this.photo = photo;
         this.uuid = uuid;
+        this.wave = false;
+        this.isFav = isFav;
     }
 
     @PrimaryKey
@@ -31,6 +34,11 @@ public class Student {
     @ColumnInfo(name = "photo")
     public String photo;
 
+    @ColumnInfo(name = "wave")
+    public boolean wave;
+    @ColumnInfo(name = "is_fav")
+    public boolean isFav;
+
     public String getName() {return name;}
 
     public String getPhoto() {return photo;}
@@ -39,7 +47,9 @@ public class Student {
 
     public int getId() {return this.studentId;}
 
-    public int getSesssionId() {return this.sessionId;}
+    public int getSessionId() {return this.sessionId;}
+
+    public boolean getFavourite(){return this.isFav;}
 
     @Override
     public boolean equals(Object obj){
