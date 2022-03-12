@@ -2,6 +2,7 @@ package com.example.birdsofafeatherteam14;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
@@ -125,6 +127,7 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
             this.studentFavorite.setChecked(student.getFavourite());
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void onClick(View view) {
             Context context = view.getContext();
@@ -135,7 +138,5 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
 
             sb.notifyObservers();
         }
-
-
     }
 }
