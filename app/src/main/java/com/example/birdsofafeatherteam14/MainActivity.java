@@ -110,13 +110,28 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
 
             Session currSession = getCurrentSession();
             if (currSession == null) {return;}
-            List<? extends Student> students;
+            List<Student> students;
 
 
             if (currSession.getId() != -2) {
                 students = db.studentDAO().getAll(currSession.sessionId);
             } else {
                 students = db.studentDAO().getAll(true);
+            }
+
+            List<Student> wavedStudents = new ArrayList<>();
+            for (Student s : students) {
+                if (s.wave) {
+                    wavedStudents.add(s);
+                }
+            }
+
+            for (Student s : wavedStudents) {
+                students.remove(s);
+            }
+
+            for (Student s : wavedStudents) {
+                students.add(0, s);
             }
 
             Log.i(TAG, "Received list of students from the database of size: " + students.size());
@@ -280,6 +295,16 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
             }
 
             // only add to db if all good and nothing went wrong earlier
+
+            // if student with this uuid and in this session already in database, dont add
+            List<Student> sameStudentList = db.studentDAO().getByUuid(student.getUuid());
+            if (!sameStudentList.isEmpty()) {
+                for (Student s : sameStudentList) {
+                    if (s.getSessionId() == currSession.getId()) {
+                        return;
+                    }
+                }
+            }
 
             db.studentDAO().insert(student);
             Log.i(TAG, "Successfully Added a student from MockBluetooth to the database");
