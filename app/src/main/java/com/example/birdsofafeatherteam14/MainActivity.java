@@ -35,10 +35,12 @@ import android.widget.Toast;
 
 
 import com.example.birdsofafeatherteam14.filters.Filter;
+import com.example.birdsofafeatherteam14.filters.NoneFilterFactory;
 import com.example.birdsofafeatherteam14.filters.NoneStudentFilter;
 import com.example.birdsofafeatherteam14.filters.QuarterStudentFilter;
 import com.example.birdsofafeatherteam14.filters.RecentStudentFilter;
 import com.example.birdsofafeatherteam14.filters.SmallStudentFilter;
+import com.example.birdsofafeatherteam14.filters.StringToFilterFactory;
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Session;
@@ -47,6 +49,8 @@ import com.example.birdsofafeatherteam14.model.db.StudentDAO;
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
+
+import org.junit.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
     private String chosenNameResult; // for the dialog where the user selects a session
     private String newSessionNameResult; // for the dialog where the user selects a name for the new session
 
-    private String currentFilter;
+    private Filter currentFilter;
     private Message currUserMessage; // stores the information about the current user that should be broadcasted
     private WaveMessageTranslator wmt;
 
@@ -97,7 +101,8 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
 
         setNoCurrentSession();
 
-        currentFilter = "None";
+        NoneFilterFactory factory = new NoneFilterFactory(this.db);
+        currentFilter = factory.createFilter();
 
         // Check if we have added the current user to a session with id -1
         if (db.studentDAO().getCurrentUsers().isEmpty()) {
@@ -133,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
         filter_spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-                        updateStudentViews(getResources().getStringArray(R.array.filters_key)[pos]);
+                        updateStudentViews(StringToFilterFactory.getFactoryFromString((getResources().getStringArray(R.array.filters_key)[pos]),db).createFilter());
                     }
                     public void onNothingSelected(AdapterView<?> adapterView){}
                 }
@@ -175,30 +180,12 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
 
     // Updates the recycler views with the other students that have overlapping classes
     // should only be called when the start button is clicked
-    private void updateStudentViews(String filter) {
+    private void updateStudentViews(Filter filter) {
+        this.currentFilter = filter;
         List<Student> students = prepareStudentList();
         List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
 
-        switch (filter){
-            case "None":
-                Filter non = new NoneStudentFilter(db);
-                commonClasses = non.studentFilter(students);
-                break;
-            case "Recent":
-                Filter rec = new RecentStudentFilter(db);
-                commonClasses = rec.studentFilter(students);
-                break;
-            case "Small":
-                Filter sml = new SmallStudentFilter(db);
-                commonClasses = sml.studentFilter(students);
-                break;
-            case "Quarter":
-                Filter qua = new QuarterStudentFilter(db);
-                commonClasses = qua.studentFilter(students);
-                break;
-        }
-
-        this.currentFilter = filter;
+        commonClasses = filter.studentFilter(students);
 
         List<Student> finalStudent = new ArrayList<>();
         List<Integer> finalCourses = new ArrayList<>();
