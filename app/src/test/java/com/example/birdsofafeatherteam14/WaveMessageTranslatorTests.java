@@ -15,7 +15,7 @@ public class WaveMessageTranslatorTests {
 
     @Before
     public void setUp() {
-        this.user = new Student(0,0,"name", "photo", "uuid");
+        this.user = new Student(0,0,"name", "photo", "uuid", true);
         this.wmt = new WaveMessageTranslator(user);
     }
 
@@ -27,7 +27,7 @@ public class WaveMessageTranslatorTests {
 
     @Test
     public void testCreateMessage() {
-        Student recipient = new Student(1, 0, "recipient", "", "rec-uuid");
+        Student recipient = new Student(1, 0, "recipient", "", "rec-uuid", true);
         Message msg = wmt.createMessage(recipient);
         String msgContents = new String(msg.getContent());
 
@@ -36,7 +36,7 @@ public class WaveMessageTranslatorTests {
 
     @Test
     public void testIsValidWaveMessage() {
-        Student recipient = new Student(1, 0, "recipient", "", "rec-uuid");
+        Student recipient = new Student(1, 0, "recipient", "", "rec-uuid", true);
         Message msg = wmt.createMessage(recipient);
         assertEquals(true, wmt.isWaveMessage(msg));
     }
