@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class SmallStudentFilter extends Filter{
+public class SmallStudentFilter extends Filter {
 
 
     public SmallStudentFilter(AppDatabase db) {

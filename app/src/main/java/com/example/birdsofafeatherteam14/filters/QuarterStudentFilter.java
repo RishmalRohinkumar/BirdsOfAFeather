@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class QuarterStudentFilter extends Filter{
+public class QuarterStudentFilter extends Filter {
 
 
     public QuarterStudentFilter(AppDatabase db) {
