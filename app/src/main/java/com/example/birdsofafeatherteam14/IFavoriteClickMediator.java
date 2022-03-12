@@ -2,6 +2,7 @@ package com.example.birdsofafeatherteam14;
 
 import android.app.Activity;
 import android.view.View;
+import android.widget.CheckBox;
 
 import com.example.birdsofafeatherteam14.model.db.Student;
 
@@ -9,5 +10,5 @@ import com.example.birdsofafeatherteam14.model.db.Student;
 public interface IFavoriteClickMediator {
 
     // Returns the updated student after toggling their favorite
-    Student mediateFavoriteToggle(Activity activity, int checkboxId, Student student);
+    Student mediateFavoriteToggle(Activity activity, CheckBox cb, Student student);
 }

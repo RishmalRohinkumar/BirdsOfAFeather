@@ -32,8 +32,10 @@ public interface StudentDAO {
     @Query("SELECT COUNT(*) from students")
     int count();
 
+    @Query("UPDATE students SET wave=:waveStatus WHERE student_id=:id")
+    void updateWave(boolean waveStatus, int id);
     @Query("UPDATE students SET is_fav=:newFav WHERE student_id=:id ")
-    void update(boolean newFav, int id);
+    void updateFav(boolean newFav, int id);
 
 //    @Update(onConflict = OnConflictStrategy.REPLACE)
 //    void updateStudent(Student student);

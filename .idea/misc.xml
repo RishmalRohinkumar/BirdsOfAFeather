@@ -10,6 +10,7 @@
         <entry key="..\:/Users/rishm/AndroidStudioProjects/birds-of-a-feather-team-14/app/src/main/res/layout/activity_profile_courses.xml" value="0.2" />
         <entry key="..\:/Users/rishm/AndroidStudioProjects/birds-of-a-feather-team-14/app/src/main/res/layout/activity_view_user.xml" value="0.25" />
         <entry key="..\:/Users/rishm/AndroidStudioProjects/birds-of-a-feather-team-14/app/src/main/res/layout/student_row.xml" value="0.25" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.20615384615384616" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.190625" />
         <entry key="app/src/main/res/layout/activity_mock_bluetooth.xml" value="0.23177083333333334" />
         <entry key="app/src/main/res/layout/activity_profile_courses.xml" value="0.1703125" />
@@ -18,6 +19,7 @@
         <entry key="app/src/main/res/layout/activity_view_user.xml" value="0.24583333333333332" />
         <entry key="app/src/main/res/layout/courses_row.xml" value="0.33" />
         <entry key="app/src/main/res/layout/student_row.xml" value="0.12183383991894631" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/wave.xml" value="0.20615384615384616" />
       </map>
     </option>
   </component>

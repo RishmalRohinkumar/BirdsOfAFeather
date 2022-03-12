@@ -14,6 +14,7 @@ public class Student {
         this.name = name;
         this.photo = photo;
         this.uuid = uuid;
+        this.wave = false;
         this.isFav = isFav;
     }
 
@@ -33,6 +34,8 @@ public class Student {
     @ColumnInfo(name = "photo")
     public String photo;
 
+    @ColumnInfo(name = "wave")
+    public boolean wave;
     @ColumnInfo(name = "is_fav")
     public boolean isFav;
 

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.content.*;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,6 +20,8 @@ import java.util.*;
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Student;
+import com.google.android.gms.nearby.Nearby;
+import com.google.android.gms.nearby.messages.Message;
 import com.squareup.picasso.Picasso;
 
 public class ViewUserActivity extends AppCompatActivity{
@@ -29,6 +32,12 @@ public class ViewUserActivity extends AppCompatActivity{
     private RecyclerView coursesRecyclerView;
     private RecyclerView.LayoutManager coursesLayoutManager;
     private CoursesViewAdapter coursesViewAdapter;
+
+    private WaveMessageTranslator wmt;
+
+    private boolean published;
+
+    private Message msg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,12 +82,33 @@ public class ViewUserActivity extends AppCompatActivity{
 
         CheckBox favourite = (CheckBox) findViewById(R.id.starViewUser);
         favourite.setChecked(student.getFavourite());
+
+        // Make the wave button say "Wave Back" if the user has already waved to us
+        Button waveButton = findViewById(R.id.wave_button);
+        if (student.wave) {
+            waveButton.setText("Wave Back");
+        } else {
+            waveButton.setText("Wave");
+        }
+
+        this.wmt = new WaveMessageTranslator(AppDatabase.singleton(this).studentDAO().getCurrentUsers().get(0));
+        this.published = false;
+        this.msg = wmt.createMessage(this.student);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (this.published) {
+            Log.i(MainActivity.TAG, "Unpublished wave message");
+            Nearby.getMessagesClient(this).unpublish(msg);
+        }
     }
 
     // link star shape checkbox to favourite and show toast
     public void onFavViewClick(View view) {
         IFavoriteClickMediator mediator = new FavoriteClickMediator(db);
-        this.student = mediator.mediateFavoriteToggle(this, R.id.starViewUser, this.student);
+        this.student = mediator.mediateFavoriteToggle(this, this.findViewById(R.id.starViewUser), this.student);
     }
 
     // Send us back to the main activity
@@ -86,5 +116,13 @@ public class ViewUserActivity extends AppCompatActivity{
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
+    }
+
+    public void onWaveButtonClicked(View view) {
+        Log.i(MainActivity.TAG, "Wave message Published");
+        Nearby.getMessagesClient(this).publish(msg);
+        this.published = true;
+        Toast toast = Toast.makeText(this, "Wave sent!", Toast.LENGTH_SHORT);
+        toast.show();
     }
 }

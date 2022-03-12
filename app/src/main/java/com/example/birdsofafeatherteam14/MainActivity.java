@@ -33,6 +33,7 @@ import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Session;
 import com.example.birdsofafeatherteam14.model.db.Student;
 import com.example.birdsofafeatherteam14.model.db.StudentDAO;
+import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
 
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
     // Stuff for bluetooth
     private MessageListener messageListener;
     private MessageListener realListener;
-    private static final String TAG = "BOAF-14";
+    public static final String TAG = "BOAF-14";
 
     public static final int START_MOCK_BLUETOOTH = 99;
     public static final int START_VIEW_USER = 919;
@@ -62,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
 
     private String chosenNameResult; // for the dialog where the user selects a session
     private String newSessionNameResult; // for the dialog where the user selects a name for the new session
+
+    private Message currUserMessage; // stores the information about the current user that should be broadcasted
+    private WaveMessageTranslator wmt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +89,14 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
             // user will already be stored in the database
             Intent intent = new Intent(this, ProfileNameActivity.class);
             startActivity(intent);
+        } else {
+            // set up message that will be broadcast with the current users information
+            Student currStudent = db.studentDAO().getCurrentUsers().get(0);
+            List<Course> currStudentCourses = db.coursesDAO().getForStudent(currStudent.getId());
+            StudentToCSVTranslator translator = new StudentToCSVTranslator(currStudent, currStudentCourses);
+            this.currUserMessage = new Message(translator.getCSV().getBytes());
+            // Set up translator to detect, create, and interpret wave messages
+            this.wmt = new WaveMessageTranslator(currStudent);
         }
     }
 
@@ -154,16 +166,10 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
         }
     }
 
-    public void onFavRowClick(View itemView) {
-        studentViewAdapter.viewHolder.favClicked(itemView);
-        updateStudentViews();
-    }
-
     @Override
     public void onExitViewUser() {
         updateStudentViews();
     }
-
 
     @Override
     protected void onDestroy() {
@@ -174,6 +180,10 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
         // don't fuck up the database
         if (db != null) {
             //db.close();
+        }
+        if (searching) {
+            Log.i(TAG, "Unpublishing information about the current user");
+            Nearby.getMessagesClient(this).unpublish(this.currUserMessage);
         }
         if (this.studentViewAdapter != null) {
             this.studentViewAdapter.unregister(this);
@@ -227,6 +237,8 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
 
         try {
             String[] splitByNewline = str.split("\n");
+            String[] lastLine = splitByNewline[splitByNewline.length - 1].split(",");
+
             String uuid = splitByNewline[0].split(",")[0];
             String name = splitByNewline[1].split(",")[0];
             String url = splitByNewline[2].split(",")[0];
@@ -234,7 +246,23 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
 
             List<Course> courses = new ArrayList<Course>();
             int currCourseId = db.coursesDAO().count() + 1;
-            for (int i = 3; i < splitByNewline.length; i++) {
+            boolean wave = false;
+
+            // the last line is specifying a wave
+            if (lastLine[1].equals("wave")) {
+                // This is a msg specifying a new person that is waving
+                wave = true;
+            }
+
+            int lastCourseLine = splitByNewline.length;
+            if (wave) {
+                // In this case, the last line doesn't hold a course, so we don't want to iterate onto
+                // it while searching for courses
+                lastCourseLine--;
+            }
+
+
+            for (int i = 3; i < lastCourseLine; i++) {
                 String[] courseInfo = splitByNewline[i].split(",");
 
                 int courseYear = Integer.parseInt(courseInfo[YEAR_INDEX]);
@@ -258,6 +286,19 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
             for (Course c : courses) {
                 db.coursesDAO().insert(c);
                 Log.i(TAG, "Successfully Added a course from MockBluetooth to the database");
+            }
+
+            if (wave) {
+                String recipientUUID = lastLine[0];
+                // last line also includes a wave, so lets handle that
+                Student currentUser = db.studentDAO().getCurrentUsers().get(0);
+                if (currentUser.uuid.equals(recipientUUID)) {
+                    String message = name + " has waved to you!";
+                    Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+
+                    int otherId = student.getId();
+                    db.studentDAO().updateWave(true, otherId);
+                }
             }
 
         } catch (IndexOutOfBoundsException | NumberFormatException e) {
@@ -315,6 +356,12 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
                 pickSessionFromList();
             }
             searchButton.setText("Stop");
+
+            Log.i(TAG, "Subscribing realListener to Nearby Messages");
+            Nearby.getMessagesClient(this).subscribe(realListener);
+            Log.i(TAG, "Starting to publish information about the current user");
+            Nearby.getMessagesClient(this).publish(this.currUserMessage);
+
         } else {
             // Give the session a name if it is unnamed
             Session currSession = getCurrentSession();
@@ -325,6 +372,11 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
             }
             searchButton.setText("Start");
             clearStudentViews();
+
+            Log.i(TAG, "Unsubscribing realListener from Nearby Messages");
+            Nearby.getMessagesClient(this).unsubscribe(realListener);
+            Log.i(TAG, "Unpublishing information about the current user");
+            Nearby.getMessagesClient(this).unpublish(this.currUserMessage);
         }
     }
 
@@ -482,8 +534,22 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
                     Log.i(TAG, "Found a bluetooth message, and am able to act upon it because db is set up.");
                     if (searching) {
                         Log.i(TAG, "Actively searching, so will check this message");
-                        String student_data = new String(message.getContent());
-                        addStudentCSVStringToDb(student_data);
+                        String msgData = new String(message.getContent());
+
+                        if (wmt.isWaveMessage(message)) {
+                            String waverUUID = wmt.interpretMessage(message);
+                            if (waverUUID != null) {
+                                // waver contains the uuid of somebody who waved at us
+                                List<Student> wavers = db.studentDAO().getByUuid(waverUUID);
+                                for (Student s : wavers) {
+                                    db.studentDAO().updateWave(true, s.getId());
+                                }
+                            }
+                        } else {
+                            // Must be a message including a new users information
+                            addStudentCSVStringToDb(msgData);
+                        }
+
                         // whenever receive a bluetooth message, update the student views
                         updateStudentViews();
                     } else {
@@ -500,5 +566,7 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
                 // Does nothing atm
             }
         };
+
+
     }
 }

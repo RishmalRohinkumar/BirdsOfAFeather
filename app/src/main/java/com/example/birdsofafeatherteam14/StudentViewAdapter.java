@@ -18,7 +18,9 @@ import com.example.birdsofafeatherteam14.model.db.Student;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.ViewHolder>
                                 implements ExitViewUserSubject {
@@ -30,12 +32,16 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
 
     private MainActivity ma;
 
+    public Map<View, Student> map;
+
     public StudentViewAdapter(List<? extends Student> students, List<Integer> sharedCourses, MainActivity ma) {
         super();
         this.students = students;
         this.sharedCourses = sharedCourses;
         this.observerList = new ArrayList<>();
         this.ma = ma;
+
+        this.map = new HashMap<>();
     }
 
     @NonNull
@@ -51,6 +57,7 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
     @Override
     public void onBindViewHolder(@NonNull StudentViewAdapter.ViewHolder holder, int position) {
         holder.setStudent(students.get(position), sharedCourses.get(position));
+        this.map.put(holder.itemView, students.get(position));
     }
 
     @Override
@@ -80,6 +87,7 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
             implements View.OnClickListener {
         private final TextView studentNameView;
         private final ImageView studentImageView;
+        private ImageView studentWaveImage;
         private final CheckBox studentFavorite;
         private Student student;
         private AppDatabase db;
@@ -91,8 +99,16 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
             super(itemView);
             this.studentNameView = itemView.findViewById(R.id.student_row_name);
             this.studentImageView = itemView.findViewById(R.id.row_view_picture);
+            this.studentWaveImage = itemView.findViewById(R.id.row_wave_img);
             this.studentFavorite = itemView.findViewById(R.id.starStudentList);
             itemView.setOnClickListener(this);
+            this.studentFavorite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    IFavoriteClickMediator mediator = new FavoriteClickMediator(AppDatabase.singleton(ma));
+                    student = mediator.mediateFavoriteToggle(ma, studentFavorite, student);
+                }
+            });
             this.sb = sb;
             this.ma = ma;
         }
@@ -101,12 +117,12 @@ public class StudentViewAdapter extends RecyclerView.Adapter<StudentViewAdapter.
             this.student = student;
             this.studentNameView.setText(student.getName() + " (" + sharedCourses.toString() + ")");
             Picasso.get().load(student.getPhoto()).into(this.studentImageView);
+            if (this.student.wave) {
+                this.studentWaveImage.setVisibility(View.VISIBLE);
+            } else {
+                this.studentWaveImage.setVisibility(View.INVISIBLE);
+            }
             this.studentFavorite.setChecked(student.getFavourite());
-        }
-
-        public void favClicked(View itemView) {
-            IFavoriteClickMediator mediator = new FavoriteClickMediator(AppDatabase.singleton(ma));
-            this.student = mediator.mediateFavoriteToggle(ma, R.id.starStudentList, this.student);
         }
 
         @Override
