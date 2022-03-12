@@ -4,7 +4,7 @@ import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 
 public class SmallFilterFactory implements IFilterFactory{
     private AppDatabase db;
-    SmallFilterFactory(AppDatabase db) {
+    public SmallFilterFactory(AppDatabase db) {
         this.db = db;
     }
 
