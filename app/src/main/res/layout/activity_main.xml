@@ -9,10 +9,11 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/students_view"
-        android:layout_width="409dp"
-        android:layout_height="584dp"
-        android:layout_marginTop="72dp"
+        android:layout_width="384dp"
+        android:layout_height="546dp"
+        android:layout_marginTop="104dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.48"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -49,4 +50,28 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/filter_spinner"
+        android:layout_width="196dp"
+        android:layout_height="22dp"
+        app:layout_constraintBottom_toTopOf="@+id/students_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.455"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.78" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/filter"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/students_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.038"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.78" />
 </androidx.constraintlayout.widget.ConstraintLayout>
