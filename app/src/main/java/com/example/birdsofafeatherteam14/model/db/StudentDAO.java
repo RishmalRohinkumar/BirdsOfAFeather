@@ -34,6 +34,7 @@ public interface StudentDAO {
 
     @Query("UPDATE students SET wave=:waveStatus WHERE student_id=:id")
     void updateWave(boolean waveStatus, int id);
+
     @Query("UPDATE students SET is_fav=:newFav WHERE student_id=:id ")
     void updateFav(boolean newFav, int id);
 
