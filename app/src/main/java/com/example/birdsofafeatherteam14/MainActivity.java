@@ -222,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
 
         studentViewAdapter = new StudentViewAdapter(finalStudent, finalCourses, this);
         studentRecyclerView.setAdapter(studentViewAdapter);
+        this.studentViewAdapter.register(this);
     }
 
     @Override
