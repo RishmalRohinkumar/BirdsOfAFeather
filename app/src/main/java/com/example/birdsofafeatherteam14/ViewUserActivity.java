@@ -35,7 +35,7 @@ public class ViewUserActivity extends AppCompatActivity{
 
     private WaveMessageTranslator wmt;
 
-    private boolean published;
+    public boolean published;
 
     private Message msg;
 
