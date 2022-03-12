@@ -6,19 +6,23 @@ import androidx.annotation.RequiresApi;
 
 import java.time.LocalDate;
 
-public class TrackCurrentQuarter {
+@RequiresApi(api = Build.VERSION_CODES.O)
+public class CurrentQuarterTracker {
 
-    public TrackCurrentQuarter(){}
+    LocalDate date;
 
+    public CurrentQuarterTracker(LocalDate date){
+        this.date = date;
+    }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    public CurrentQuarterTracker() {
+        this.date = LocalDate.now();
+    }
+
     public String getQtr(){
         //get current Datetime from LocalDate api
-        LocalDate date = LocalDate.now();
-        int year = date.getYear();
         int month = date.getMonthValue();
         int day = date.getDayOfMonth();
-        String sYear = String.valueOf(year).substring(2);
 
         String sSeason = "";
 
@@ -51,7 +55,11 @@ public class TrackCurrentQuarter {
         }
 
         //return in format "qtr + year" (i.e "FA22")
-        return sSeason+sYear;
+        return sSeason;
 
+    }
+
+    public String getYr(){
+        return String.valueOf(date.getYear());
     }
 }

@@ -2,13 +2,17 @@ package com.example.birdsofafeatherteam14;
 
 import static com.example.birdsofafeatherteam14.Utilities.showAlert;
 
+import static java.lang.Integer.parseInt;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,7 +21,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.text.InputType;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -28,6 +34,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.example.birdsofafeatherteam14.filters.Filter;
+import com.example.birdsofafeatherteam14.filters.NoneFilterFactory;
+import com.example.birdsofafeatherteam14.filters.NoneStudentFilter;
+import com.example.birdsofafeatherteam14.filters.QuarterStudentFilter;
+import com.example.birdsofafeatherteam14.filters.RecentStudentFilter;
+import com.example.birdsofafeatherteam14.filters.SmallStudentFilter;
+import com.example.birdsofafeatherteam14.filters.StringToFilterFactory;
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
 import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Session;
@@ -37,11 +50,17 @@ import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
 
+import org.junit.Test;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity implements ExitViewUserObserver {
     // Stuff for bluetooth
     private MessageListener messageListener;
@@ -64,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
     private String chosenNameResult; // for the dialog where the user selects a session
     private String newSessionNameResult; // for the dialog where the user selects a name for the new session
 
+    private Filter currentFilter;
     private Message currUserMessage; // stores the information about the current user that should be broadcasted
     private WaveMessageTranslator wmt;
 
@@ -81,6 +101,9 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
 
         setNoCurrentSession();
 
+        NoneFilterFactory factory = new NoneFilterFactory(this.db);
+        currentFilter = factory.createFilter();
+
         // Check if we have added the current user to a session with id -1
         if (db.studentDAO().getCurrentUsers().isEmpty()) {
             Log.i(TAG, "No current student set");
@@ -97,21 +120,41 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
             this.currUserMessage = new Message(translator.getCSV().getBytes());
             // Set up translator to detect, create, and interpret wave messages
             this.wmt = new WaveMessageTranslator(currStudent);
+            setFilterSpinner();
         }
     }
 
-    // Updates the recycler views with the other students that have overlapping classes
-    // should only be called when the start button is clicked
-    private void updateStudentViews() {
-        Log.i(TAG, "updateStudentViews() called");
+    private void setFilterSpinner(){
+        Spinner filter_spinner = (Spinner) findViewById(R.id.filter_spinner);
+
+        ArrayAdapter<CharSequence> filter_adapter = ArrayAdapter.createFromResource(this,
+                R.array.filters_array, android.R.layout.simple_spinner_item);
+
+        filter_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+
+        filter_spinner.setAdapter(filter_adapter);
+
+        filter_spinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
+                        updateStudentViews(StringToFilterFactory.getFactoryFromString((getResources().getStringArray(R.array.filters_key)[pos]),db).createFilter());
+                    }
+                    public void onNothingSelected(AdapterView<?> adapterView){}
+                }
+        );
+    }
+
+    private List<Student> prepareStudentList(){
+        List<Student> students = new ArrayList<>();
 
         if (db != null) {
-            Log.i(TAG, "Database not null in updateStudentViews()");
+            Log.i(TAG, "Database not null in prepareStudentList");
 
             Session currSession = getCurrentSession();
-            if (currSession == null) {return;}
-            List<? extends Student> students;
+            if (currSession == null) {return students;}
 
+            Log.i(TAG, "Received list of students from the database of size: " + students.size());
 
             if (currSession.getId() != -2) {
                 students = db.studentDAO().getAll(currSession.sessionId);
@@ -119,56 +162,71 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
                 students = db.studentDAO().getAll(true);
             }
 
-            Log.i(TAG, "Received list of students from the database of size: " + students.size());
 
-            List<Integer> classes = new ArrayList<Integer>();
+            Log.i(TAG, "Received list of students from the database of size: " + students.size());
 
             Student user = db.studentDAO().getCurrentUsers().get(0);
 
-            Log.i(TAG, "Going through other students and selecting the common courses");
             //Remove user from student list
             students.remove(user);
 
-            //List out common classes
-            for(Student student : students){
-                StudentCourseComparator comparator = new StudentCourseComparator
-                        (db.coursesDAO().getForStudent(user.studentId), db.coursesDAO().getForStudent(student.getId()));
-                List<Course> overlapList = comparator.compare();
-                classes.add(overlapList.size());
-            }
+            return students;
 
-            // These lists are the final versions which will be passed into the recycler views
-            // and ultimately displayed on the screen. They have been curated to only include
-            // students that the current student has common classes with. The commonClasses<Integer>
-            // list is so that the recycler view knows how many common classes the current user student
-            // and the student in question have, so it can display that information to the screen.
-            List<Student> commonStudents = new ArrayList<Student>();
-            List<Integer> commonClasses = new ArrayList<Integer>();
-
-            for (int i = 0; i < classes.size(); i++){
-                if (classes.get(i) != 0){
-                    commonClasses.add(classes.get(i));
-                    commonStudents.add(students.get(i));
-                }
-            }
-
-            Log.i(TAG, "Common courses found: starting to set up RecyclerViews");
-            studentRecyclerView = findViewById(R.id.students_view);
-
-            studentLayoutManager = new LinearLayoutManager(this);
-            studentRecyclerView.setLayoutManager(studentLayoutManager);
-
-            studentViewAdapter = new StudentViewAdapter(commonStudents, commonClasses, this);
-            studentRecyclerView.setAdapter(studentViewAdapter);
-            studentViewAdapter.register(this);
         } else {
             Log.i(TAG, "Database null in updateStudentViews()");
         }
+        return students;
+    }
+
+    // Updates the recycler views with the other students that have overlapping classes
+    // should only be called when the start button is clicked
+    private void updateStudentViews(Filter filter) {
+        this.currentFilter = filter;
+        List<Student> students = prepareStudentList();
+        List<Pair<Student, Integer>> commonClasses = new ArrayList<>();
+
+        commonClasses = filter.studentFilter(students);
+
+        List<Student> finalStudent = new ArrayList<>();
+        List<Integer> finalCourses = new ArrayList<>();
+
+
+        List<Pair<Student, Integer>> wavedStudents = new ArrayList<>();
+        List<Pair<Student, Integer>> notWavedStudents = new ArrayList<>();
+        for (Pair<Student, Integer> s : commonClasses) {
+            if (s.first.wave) {
+                wavedStudents.add(new Pair(s.first, s.second));
+            } else {
+                notWavedStudents.add(new Pair(s.first, s.second));
+            }
+        }
+
+        commonClasses.clear();
+        for (Pair<Student, Integer> p : wavedStudents) {
+            commonClasses.add(p);
+        }
+        for (Pair<Student, Integer> p : notWavedStudents) {
+            commonClasses.add(p);
+        }
+
+        for (Pair p : commonClasses) {
+            finalStudent.add((Student)(p.first));
+            finalCourses.add((Integer)(p.second));
+        }
+
+        Log.i(TAG, "Common courses found: starting to set up RecyclerViews");
+        studentRecyclerView = findViewById(R.id.students_view);
+
+        studentLayoutManager = new LinearLayoutManager(this);
+        studentRecyclerView.setLayoutManager(studentLayoutManager);
+
+        studentViewAdapter = new StudentViewAdapter(finalStudent, finalCourses, this);
+        studentRecyclerView.setAdapter(studentViewAdapter);
     }
 
     @Override
     public void onExitViewUser() {
-        updateStudentViews();
+        updateStudentViews(this.currentFilter);
     }
 
     @Override
@@ -212,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
         else if (requestCode == START_VIEW_USER) {
             if (resultCode == Activity.RESULT_OK) {
                 Log.i(TAG, "Received ok result from view user activity");
-                updateStudentViews();
+                updateStudentViews(this.currentFilter);
             } else {
                 Log.i(TAG, "Received not ok result from view user activity");
             }
@@ -265,10 +323,10 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
             for (int i = 3; i < lastCourseLine; i++) {
                 String[] courseInfo = splitByNewline[i].split(",");
 
-                int courseYear = Integer.parseInt(courseInfo[YEAR_INDEX]);
+                int courseYear = parseInt(courseInfo[YEAR_INDEX]);
                 String courseQuarter = courseInfo[QUARTER_INDEX];
                 String courseSubject = courseInfo[SUBJECT_INDEX];
-                int courseNum = Integer.parseInt(courseInfo[NUMBER_INDEX]);
+                int courseNum = parseInt(courseInfo[NUMBER_INDEX]);
                 String courseSize = courseInfo[SIZE_INDEX];
                 // POST INCREMENT SO IT'S ONE GREATER FOR THE NEXT COURSE
                 // DOING IT THIS WAY BECAUSE WE ARE NOT ADDING COURSES TO THE DB
@@ -280,6 +338,16 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
             }
 
             // only add to db if all good and nothing went wrong earlier
+
+            // if student with this uuid and in this session already in database, dont add
+            List<Student> sameStudentList = db.studentDAO().getByUuid(student.getUuid());
+            if (!sameStudentList.isEmpty()) {
+                for (Student s : sameStudentList) {
+                    if (s.getSessionId() == currSession.getId()) {
+                        return;
+                    }
+                }
+            }
 
             db.studentDAO().insert(student);
             Log.i(TAG, "Successfully Added a student from MockBluetooth to the database");
@@ -350,7 +418,7 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
                 newSession = new Session(db.sessionDAO().count(), timeStamp, false);
                 setCurrentSession(newSession);
                 db.sessionDAO().insert(newSession);
-                updateStudentViews();
+                updateStudentViews(currentFilter);
             } else {
                 // Ask the user to pick a session from the list of sessions, or a new session
                 pickSessionFromList();
@@ -469,7 +537,7 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
                 }
 
                 setCurrentSession(newSession);
-                updateStudentViews();
+                updateStudentViews(currentFilter);
             }
         });
         builder.create().show();
@@ -551,7 +619,7 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
                         }
 
                         // whenever receive a bluetooth message, update the student views
-                        updateStudentViews();
+                        updateStudentViews(currentFilter);
                     } else {
                         Log.i(TAG, "Not actively searching, doing nothing with this message");
                     }
