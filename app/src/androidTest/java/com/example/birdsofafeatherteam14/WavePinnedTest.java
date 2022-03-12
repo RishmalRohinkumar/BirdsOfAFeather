@@ -74,7 +74,6 @@ public class WavePinnedTest {
         db.studentDAO().insert(user);
         db.coursesDAO().insert(cUser);
 
-
         // Show that s3 is at the top of the list
         NoneFilterFactory factory = new NoneFilterFactory(db);
         NoneStudentFilter filter = (NoneStudentFilter) factory.createFilter();

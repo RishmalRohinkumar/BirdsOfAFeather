@@ -60,6 +60,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+// last commit
+
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity implements ExitViewUserObserver {
     // Stuff for bluetooth
