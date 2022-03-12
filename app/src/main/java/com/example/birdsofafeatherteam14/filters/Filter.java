@@ -41,6 +41,27 @@ public abstract class Filter {
         return commonClasses;
     }
 
+    protected List<Pair<Student, Integer>> pinWaved(List<Pair<Student,Integer>> list) {
+        List<Pair<Student, Integer>> wavedStudents = new ArrayList<>();
+        List<Pair<Student, Integer>> notWavedStudents = new ArrayList<>();
+        for (Pair<Student, Integer> s : list) {
+            if (s.first.wave) {
+                wavedStudents.add(new Pair(s.first, s.second));
+            } else {
+                notWavedStudents.add(new Pair(s.first, s.second));
+            }
+        }
+
+        list.clear();
+        for (Pair<Student, Integer> p : wavedStudents) {
+            list.add(p);
+        }
+        for (Pair<Student, Integer> p : notWavedStudents) {
+            list.add(p);
+        }
+        return list;
+    }
+
     public abstract List<Pair<Student, Integer>> studentFilter(List<Student> students);
 
 }

@@ -62,6 +62,7 @@ public class SessionsTests{
     }
 
     // Make sure we can have separate students in many sessions
+    // User Story 3, 5
     @Test
     public void testSeparateSessions() throws Exception {
         Session session0 = new Session(0, "CSE 105", true);
@@ -92,6 +93,7 @@ public class SessionsTests{
     }
 
     // test to make sure we can rename the sessions in the database
+    // User Story 4
     @Test
     public void testUpdateSession() {
         Session s = new Session(0, "timestamp", false);

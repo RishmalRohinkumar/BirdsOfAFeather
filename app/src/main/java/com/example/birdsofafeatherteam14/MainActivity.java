@@ -190,25 +190,6 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
         List<Student> finalStudent = new ArrayList<>();
         List<Integer> finalCourses = new ArrayList<>();
 
-
-        List<Pair<Student, Integer>> wavedStudents = new ArrayList<>();
-        List<Pair<Student, Integer>> notWavedStudents = new ArrayList<>();
-        for (Pair<Student, Integer> s : commonClasses) {
-            if (s.first.wave) {
-                wavedStudents.add(new Pair(s.first, s.second));
-            } else {
-                notWavedStudents.add(new Pair(s.first, s.second));
-            }
-        }
-
-        commonClasses.clear();
-        for (Pair<Student, Integer> p : wavedStudents) {
-            commonClasses.add(p);
-        }
-        for (Pair<Student, Integer> p : notWavedStudents) {
-            commonClasses.add(p);
-        }
-
         for (Pair p : commonClasses) {
             finalStudent.add((Student)(p.first));
             finalCourses.add((Integer)(p.second));
@@ -222,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements ExitViewUserObser
 
         studentViewAdapter = new StudentViewAdapter(finalStudent, finalCourses, this);
         studentRecyclerView.setAdapter(studentViewAdapter);
+        this.studentViewAdapter.register(this);
     }
 
     @Override

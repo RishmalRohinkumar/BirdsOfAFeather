@@ -26,6 +26,6 @@ public class NoneStudentFilter extends Filter {
 
         Collections.sort(commonClasses, Comparator.comparing(p -> -p.second));
 
-        return commonClasses;
+        return pinWaved(commonClasses);
     }
 }

@@ -25,7 +25,7 @@ import com.google.android.gms.nearby.messages.Message;
 import com.squareup.picasso.Picasso;
 
 public class ViewUserActivity extends AppCompatActivity{
-    private Student student;
+    public Student student;
     private AppDatabase db;
     private int studentId;
 
@@ -35,7 +35,7 @@ public class ViewUserActivity extends AppCompatActivity{
 
     private WaveMessageTranslator wmt;
 
-    private boolean published;
+    public boolean published;
 
     private Message msg;
 

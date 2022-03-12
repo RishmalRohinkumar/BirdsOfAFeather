@@ -108,7 +108,7 @@ public class RecentStudentFilter extends Filter {
             commonClasses.add(pair.first);
         }
 
-        return commonClasses;
+        return pinWaved(commonClasses);
 
     }
 }
