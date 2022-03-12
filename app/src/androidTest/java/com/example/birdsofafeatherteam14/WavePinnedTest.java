@@ -4,6 +4,7 @@ package com.example.birdsofafeatherteam14;
 import static org.junit.Assert.assertEquals;
 
 import android.content.Context;
+import android.util.Pair;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -15,7 +16,10 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.birdsofafeatherteam14.filters.NoneFilterFactory;
+import com.example.birdsofafeatherteam14.filters.NoneStudentFilter;
 import com.example.birdsofafeatherteam14.model.db.AppDatabase;
+import com.example.birdsofafeatherteam14.model.db.Course;
 import com.example.birdsofafeatherteam14.model.db.Student;
 
 import org.junit.After;
@@ -53,11 +57,35 @@ public class WavePinnedTest {
     public void testWavePinned() {
         // Change students' courses for specific ordering
         Student s1 = new Student(0, 1, "Bill", "", "X", false);
+        Course c1 = new Course(0, 0, 2020, 110, "CSE", "WI", "Large");
         Student s2 = new Student(1, 1, "Mike", "", "Y", false);
+        Course c2 = new Course(1, 1, 2020, 110, "CSE", "WI", "Large");
         Student s3 = new Student(2, 1, "Bobby", "", "Z", false);
-
+        Course c3 = new Course(2, 2, 2020, 110, "CSE", "WI", "Large");
+        Student user = new Student(-1, -1, "User", "", "E", false);
+        Course cUser = new Course(3, -1, 2020, 110, "CSE", "WI", "Large");
         s3.wave = true;
+        db.studentDAO().insert(s1);
+        db.studentDAO().insert(s2);
+        db.studentDAO().insert(s3);
+        db.coursesDAO().insert(c1);
+        db.coursesDAO().insert(c2);
+        db.coursesDAO().insert(c3);
+        db.studentDAO().insert(user);
+        db.coursesDAO().insert(cUser);
+
 
         // Show that s3 is at the top of the list
+        NoneFilterFactory factory = new NoneFilterFactory(db);
+        NoneStudentFilter filter = (NoneStudentFilter) factory.createFilter();
+
+        List<Student> students = new ArrayList<>();
+        students.add(s1);
+        students.add(s2);
+        students.add(s3);
+
+        // Sort according to none filter(which should put the waved students on top)
+        List<Pair<Student, Integer>> newList = filter.studentFilter(students);
+        assertEquals(true, newList.get(0).first.wave);
     }
 }
